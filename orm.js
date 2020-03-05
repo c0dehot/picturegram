@@ -65,8 +65,12 @@ async function getThumbnail( myId ){
 }
 
 async function tagSearch( tag ){
-    const tagSearchPictures = await db.query( "SELECT * FROM thumbnails WHERE tags LIKE ? ", [ `%${tag}%` ] );
-    return tagSearchPictures;
+    console.log(`orm tag: ${tag}`)
+    let query = `select * from thumbnails where tags like "%${tag.replace('"','').replace('"','')}%"`;
+    console.log(`Query: ${query}`);
+    const tagSearchPictures = await db.query(query);
+    console.log(`orm search: ${JSON.stringify(tagSearchPictures)}`)
+    return JSON.stringify(tagSearchPictures);
 }
 module.exports = { 
     listThumbnails,

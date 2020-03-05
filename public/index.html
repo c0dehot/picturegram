@@ -40,10 +40,54 @@
         async function searchTag(tag){
           console.log(`Searching for ${tag}...`)
           const tagSearchPictures = await $.get( `/api/thumbnails/${tag}`)
-          appendHtml(tagSearchPictures);
+          render(tagSearchPictures);
 
         }
         
+        async function render(myPictureList){
+
+          $('#pictureList').html('');
+
+          myPictureList.forEach( function( picture ){
+            // format the time (relative to now, ex 5 minutes ago)
+            console.log(picture.picture_id);
+            const formattedTime = moment( picture.creation_time ).fromNow();
+
+            // build the badges
+            let tagsHtml = '';
+            const tags = picture.tags.split(',');
+            tags.forEach( function( tag ){
+                tagsHtml += `<span class="badge badge-pill badge-info is-light" onClick="searchTag('${tag.trim()}')">${tag.trim()}</span> `;
+            
+                // let favourite = ''
+            });
+            let fav = '';
+            if (picture.picture_id != null){
+              fav = '<p><a class="favorite" style="float:right;"><i class="fa fa-heart fa-lg fav" aria-hidden="true"></i></a></p>'
+            }
+            else fav = '<p><a class="favorite" style="float:right;"><i class="fa fa-heart-o fa-lg fav" aria-hidden="true"></i></a></p>'
+
+            $('#pictureList').append( `
+          <div class="col-md-4">
+            <div class="card mb-4 shadow-sm h-100">
+              <img src="${picture.image_url}" class="thumbnail-size img-fluid" preserveAspectRatio="xMidYMid slice" />
+              <div class="card-body">
+                ${fav}
+                <p class="card-text"><b>${picture.name}</b>: ${tagsHtml} </p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="btn-group">
+                    <button onClick="editThumbnail('${picture.id}')" type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                    <button onClick="deleteThumbnail('${picture.id}')" type="button" class="btn btn-sm btn-outline-secondary">Delete</button>
+                  </div>
+                  <small class="text-small text-muted format-date" style='padding-left:7px; font-size: -1;'>${formattedTime}</small>
+                </div>
+              </div>
+            </div>
+          </div>                
+            `);
+          });
+
+}
 
         $(document).ready( async function(){
 
@@ -51,50 +95,7 @@
             console.log(`myPictureList: ${myPictureList}`)
             // get picture list and show
 
-            async function render(myPictureList){
-
-              $('#pictureList').html('');
-
-              myPictureList.forEach( function( picture ){
-                // format the time (relative to now, ex 5 minutes ago)
-                console.log(picture.picture_id);
-                const formattedTime = moment( picture.creation_time ).fromNow();
-
-                // build the badges
-                let tagsHtml = '';
-                const tags = picture.tags.split(',');
-                tags.forEach( function( tag ){
-                    tagsHtml += `<span class="badge badge-pill badge-info is-light" onClick="searchTag('${tag.trim()}')">${tag.trim()}</span> `;
-                
-                    // let favourite = ''
-                });
-                let fav = '';
-                if (picture.picture_id != null){
-                  fav = '<p><a class="favorite" style="float:right;"><i class="fa fa-heart fa-lg fav" aria-hidden="true"></i></a></p>'
-                }
-                else fav = '<p><a class="favorite" style="float:right;"><i class="fa fa-heart-o fa-lg fav" aria-hidden="true"></i></a></p>'
-
-                $('#pictureList').append( `
-              <div class="col-md-4">
-                <div class="card mb-4 shadow-sm h-100">
-                  <img src="${picture.image_url}" class="thumbnail-size img-fluid" preserveAspectRatio="xMidYMid slice" />
-                  <div class="card-body">
-                    ${fav}
-                    <p class="card-text"><b>${picture.name}</b>: ${tagsHtml} </p>
-                    <div class="d-flex justify-content-between align-items-center">
-                      <div class="btn-group">
-                        <button onClick="editThumbnail('${picture.id}')" type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                        <button onClick="deleteThumbnail('${picture.id}')" type="button" class="btn btn-sm btn-outline-secondary">Delete</button>
-                      </div>
-                      <small class="text-small text-muted format-date" style='padding-left:7px; font-size: -1;'>${formattedTime}</small>
-                    </div>
-                  </div>
-                </div>
-              </div>                
-                `);
-            });
-
-            }
+           
 
 
             
