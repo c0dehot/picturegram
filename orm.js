@@ -34,7 +34,7 @@ const db = new Database({
 });
 
 async function listThumbnails(){
-    const myList = await db.query( "SELECT * FROM thumbnails ORDER BY id" );
+    const myList = await db.query( "SELECT * FROM thumbnails left join favourites on thumbnails.id = favourites.picture_id order by thumbnails.id" );
     return myList;
 }
 
