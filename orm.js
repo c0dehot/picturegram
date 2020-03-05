@@ -29,7 +29,7 @@ const db = new Database({
     host: "localhost",
     port: 3306,
     user: "root",
-    password: "",
+    password: "Root1234",
     database: "pictures"
 });
 
@@ -64,10 +64,15 @@ async function getThumbnail( myId ){
     return myData[0];
 }
 
+async function tagSearch( tag ){
+    const tagSearchPictures = await db.query( "SELECT * FROM thumbnails WHERE tags LIKE ? ", [ `%${tag}%` ] );
+    return tagSearchPictures;
+}
 module.exports = { 
     listThumbnails,
     saveThumbnail,
     deleteThumbnail,
     updateThumbnail,
-    getThumbnail
+    getThumbnail,
+    tagSearch,
 }

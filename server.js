@@ -40,6 +40,13 @@ app.put( '/api/thumbnails', async function( req, res ){
     res.send( { message: `Thank you, updated ${req.body.name}` } );
 } );
 
+app.get('/api/thumbnails/:tag', async function( req, res){
+    console.log(`api searcing for elements with tag ${req.params.tag}`)
+    const myTagsList = await orm.tagSearch();
+
+    res.send(myTagsList);
+})
+
 app.listen( PORT, function(){
     console.log( `[pictures] RUNNING, http://localhost:${PORT}` );
 })

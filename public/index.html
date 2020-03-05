@@ -37,10 +37,21 @@
             location.href = `/add_picture.html#${id}`;
         }
 
+        async function searchTag(tag){
+          console.log(`Searching for ${tag}...`)
+          const tagSearchPictures = await $.get( `/api/thumbnails/${tag}`)
+          appendHtml(tagSearchPictures);
+
+        }
+        
+
         $(document).ready( async function(){
+
+
 
             const myPictureList = await $.get( '/api/thumbnails' );
             // get picture list and show
+        async function appendHtml(myPictureList){
             $('#pictureList').html('');
 
             myPictureList.forEach( function( picture ){
@@ -51,7 +62,7 @@
                 let tagsHtml = '';
                 const tags = picture.tags.split(',');
                 tags.forEach( function( tag ){
-                    tagsHtml += `<span class="badge badge-pill badge-info is-light">${tag.trim()}</span> `;
+                    tagsHtml += `<span class="badge badge-pill badge-info is-light" onClick="searchTag('${tag.trim()}')">${tag.trim()}</span> `;
                 });
 
                 $('#pictureList').append( `
@@ -73,6 +84,8 @@
               </div>                
                 `);
             });
+          }
+
             // loop through each and try to set time            
             // $('.format-date').each( function(){
             //     const timestamp = $(this).attr('data-timestamp');
@@ -86,6 +99,7 @@
             //     console.log( `id='${id}', `, document.querySelector(`#pic_${id}`) );
             //     document.querySelector(`#pic_${id}`).innerText = "woof: "+formattedTime;
             // } );
+            appendHtml(myPictureList)
         })
     </script>
     <main role="main">
