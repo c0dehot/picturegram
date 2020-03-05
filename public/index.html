@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pictures</title>
+
+      <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+</head>
+<body>
+    <style>
+        .thumbnail-size {
+            width: 100%;
+            height: 30vh; /* 30% of viewport: see: https://css-tricks.com/fun-viewport-units/ */
+            object-fit: cover;
+        }
+    </style>
+
+    <script>
+        async function deleteThumbnail( id ){
+            if( confirm( `Are you SURE you want to delete this?` ) ){
+                const apiResult = await $.ajax({
+                    url: `/api/thumbnail/${id}`,
+                    type: 'DELETE'
+                });
+                alert( apiResult.message );
+                // refresh the page
+                location.href = '/index.html';
+            }
+        }
+
+        function editThumbnail( id ){
+            location.href = `/add_picture.html#${id}`;
+        }
+
+        $(document).ready( async function(){
+
+            const myPictureList = await $.get( '/api/thumbnails' );
+            // get picture list and show
+            $('#pictureList').html('');
+
+            myPictureList.forEach( function( picture ){
+                // format the time (relative to now, ex 5 minutes ago)
+                const formattedTime = moment( picture.creation_time ).fromNow();
+
+                // build the badges
+                let tagsHtml = '';
+                const tags = picture.tags.split(',');
+                tags.forEach( function( tag ){
+                    tagsHtml += `<span class="badge badge-pill badge-info is-light">${tag.trim()}</span> `;
+                });
+
+                $('#pictureList').append( `
+              <div class="col-md-4">
+                <div class="card mb-4 shadow-sm h-100">
+                  <img src="${picture.image_url}" class="thumbnail-size img-fluid" preserveAspectRatio="xMidYMid slice" />
+                  <div class="card-body">
+                    <p class="card-text"><b>${picture.name}</b>: ${tagsHtml}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <div class="btn-group">
+                        <button onClick="editThumbnail('${picture.id}')" type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                        <button onClick="deleteThumbnail('${picture.id}')" type="button" class="btn btn-sm btn-outline-secondary">Delete</button>
+                      </div>
+                      <small class="text-small text-muted format-date" style='padding-left:7px; font-size: -1;'>${formattedTime}</small>
+                    </div>
+                  </div>
+                </div>
+              </div>                
+                `);
+            });
+            // loop through each and try to set time            
+            // $('.format-date').each( function(){
+            //     const timestamp = $(this).attr('data-timestamp');
+            //     const formattedTime = moment( timestamp ).fromNow();
+            //     $(this).html( formattedTime );
+            // });
+            // document.querySelectorAll('.format-date').forEach( function( el ){
+            //     const id = el.id;
+            //     const timestamp = el.dataset.timestamp;
+            //     const formattedTime = moment( timestamp ).fromNow();
+            //     console.log( `id='${id}', `, document.querySelector(`#pic_${id}`) );
+            //     document.querySelector(`#pic_${id}`).innerText = "woof: "+formattedTime;
+            // } );
+        })
+    </script>
+    <main role="main">
+
+        <section class="jumbotron text-center">
+          <div class="container">
+            <h1>Our Greatest Memories Pinboard</h1>
+            <p class="lead text-muted">Sometimes you forget how many wonderful memories you have already experienced.</p>
+          </div>
+        </section>
+      
+        <div class="album py-5 bg-light">
+          <div class="container">
+            <div class="row">
+                <div class="col float-right">
+                    <a href="/add_picture.html" class="btn btn-lg btn-primary">Add Picture</a>
+                </div>
+            </div>
+            <hr />                  
+            <div class="row" id='pictureList'>
+                <!-- pictures will be put here -->
+            </div>
+          </div>
+        </div>
+      
+      </main>
+
+</body>
+</html>
