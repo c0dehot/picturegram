@@ -47,12 +47,11 @@
 
         $(document).ready( async function(){
 
-
-
             const myPictureList = await $.get( '/api/thumbnails' );
+            console.log(`myPictureList: ${myPictureList}`)
             // get picture list and show
 
-            async function render(){
+            async function render(myPictureList){
 
               $('#pictureList').html('');
 
@@ -65,7 +64,7 @@
                 let tagsHtml = '';
                 const tags = picture.tags.split(',');
                 tags.forEach( function( tag ){
-                    tagsHtml += `<span class="badge badge-pill badge-info is-light">${tag.trim()}</span> `;
+                    tagsHtml += `<span class="badge badge-pill badge-info is-light" onClick="searchTag('${tag.trim()}')">${tag.trim()}</span> `;
                 
                     // let favourite = ''
                 });
@@ -114,7 +113,7 @@
             //     console.log( `id='${id}', `, document.querySelector(`#pic_${id}`) );
             //     document.querySelector(`#pic_${id}`).innerText = "woof: "+formattedTime;
             // } );
-            render();
+            render(myPictureList);
         })
     </script>
     <main role="main">
