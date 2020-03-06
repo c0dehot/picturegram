@@ -12,12 +12,18 @@ const app = express();
 app.use( express.static('public') );
 app.use( express.urlencoded({ extended: false }) );
 
-const userId = 10;
-
-app.get( '/api/thumbnails/:userId', async function( req, res ){
-    const myPictureList = await orm.listThumbnails( userId );
+app.get('/api/thumbnails/:userId/:tag?', async function( req, res){
+    console.log(`api searcing for elements with tag ${req.params.tag}`)
+    const tag = req.params.tag;
+    const userId = req.params.userId;
+    
+    let myPictureList;
+    if( tag )
+        myPictureList = await orm.tagSearch( userId, tag);
+    else
+        myPictureList = await orm.listThumbnails( userId );
     res.send( myPictureList );
-});
+})
 
 app.post( '/api/thumbnails', async function( req, res ){
     console.log( `[POST api/thumbnails] recieved: `, req.body );
@@ -44,17 +50,6 @@ app.put( '/api/thumbnails', async function( req, res ){
 
     res.send( { message: `Thank you, updated ${req.body.name}` } );
 } );
-
-app.get('/api/thumbnails/:userId/:tag', async function( req, res){
-    console.log(`api searcing for elements with tag ${req.params.tag}`)
-    const tag = req.params.tag;
-    const userId = req.params.userId;
-    console.log(`Calling tag search with: ${userId} ${tag}`)
-    const myTagsList = await orm.tagSearch( userId, tag);
-    console.log(myTagsList);
-
-    res.send(myTagsList);
-})
 
 app.get( `/api/favourite-add/:userId/:picId`, async function( req, res ){
     await orm.addFavourite( req.params.userId, req.params.picId );
