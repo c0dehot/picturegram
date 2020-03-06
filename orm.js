@@ -94,7 +94,7 @@ async function tagSearch( userId, tag ){
 }
 
 async function addFavourite( userId, picID ){
-    const myFav = await db.query ("INSERT INTO favourites (user_id, picture_id) VALUES(?,?)", [ userId, picID ] );
+    const myFav = await db.query ("REPLACE INTO favourites (user_id, picture_id) VALUES(?,?)", [ userId, picID ] );
     return myFav;
 }
 
