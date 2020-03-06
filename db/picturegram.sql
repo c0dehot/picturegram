@@ -11,6 +11,16 @@ CREATE TABLE thumbnails (
     update_time DATETIME ON UPDATE CURRENT_TIMESTAMP
 );
 
+CREATE TABLE users(
+	id INTEGER AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL, 
+    last_name VARCHAR(50) NOT NULL, 
+    email_address VARCHAR(50) NOT NULL,
+    user_password VARCHAR(50) NOT NULL,
+    creation_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    update_time DATETIME ON UPDATE CURRENT_TIMESTAMP
+);
+
 
 # seed.sql
 INSERT INTO thumbnails (name,image_url,tags) VALUES('Dude','https://cdn.quotesgram.com/img/70/46/2076036230-omg-shocked-dog.jpg','shocked,confused,drooling');
