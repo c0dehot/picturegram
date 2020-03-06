@@ -39,31 +39,52 @@
 
 
         async function addFavourite( picId ){
-          const userId = localStorage.userId;
+          const userId = 10;
           if( !userId){
             return
           }
+          console.log( `calling GET: /api/favourite-add/${userId}/${picId}` );
           const apiResult = await $.get(`/api/favourite-add/${userId}/${picId}`)
-          alert( apiResult.message )
+          console.log(apiResult);
+
+          $(`#heart${picId}`).removeClass( 'fa-heart-o' ).addClass( 'fa-heart fa-3x' );
+          setTimeout( function(){ $(`#heart${picId}`).addClass('fa-2x').removeClass('fa-3x'); }, 150 );
+          setTimeout( function(){ $(`#heart${picId}`).removeClass('fa-2x'); }, 300 );
         }
 
         async function deleteFavourite( picId ){
-          const userId = localStorage.userId;
+          const userId = 10;
           if( !userId){
             return
           }
           const apiResult = await $.get(`/api/favourite-del/${userId}/${picId}`)
-          alert( apiResult.message )
+          console.log(apiResult);
+
+          $(`#heart${picId}`).removeClass( 'fa-heart' ).addClass( 'fa-heart-o fa-3x' );
+          setTimeout( function(){ $(`#heart${picId}`).addClass('fa-2x').removeClass('fa-3x'); }, 150 );
+          setTimeout( function(){ $(`#heart${picId}`).removeClass('fa-2x'); }, 300 );
+
         }
-
-
 
         async function searchTag(tag){
           console.log(`Searching for ${tag}...`)
           const tagSearchPictures = await $.get( `/api/thumbnails/${tag}`)
           render(tagSearchPictures);
-
         }
+
+        function toggleFavourite( id ){
+          // set the heart to other one and make it bigger
+          if( $(`#heart${id}`).hasClass( 'fa-heart' ) ){
+            // toggle off
+            $(`#heart${id}`).removeClass( 'fa-heart' ).addClass( 'fa-heart-o fa-3x' );
+          } else {
+            $(`#heart${id}`).removeClass( 'fa-heart-o' ).addClass( 'fa-heart fa-3x' );
+          }
+          // remove the 2x size
+          setTimeout( function(){ $(`#heart${id}`).addClass('fa-2x').removeClass('fa-3x'); }, 150 );
+          setTimeout( function(){ $(`#heart${id}`).removeClass('fa-2x'); }, 300 );
+        }
+
         
         async function render(myPictureList){
 
@@ -84,9 +105,9 @@
             });
             let fav = '';
             if (picture.picture_id != null){
-              fav = `<p><a class="favorite" onClick=deleteFavourite('${picture.picture_id}') style="float:right;"><i class="fa fa-heart fa-lg fav" aria-hidden="true"></i></a></p>`
+              fav = `<p><a class="favorite" onClick="deleteFavourite('${picture.id}')" style="float:right;"><i id="heart${picture.id}" class="fa fa-heart fa-lg fav" aria-hidden="true"></i></a></p>`
             }
-            else fav = `<p><a class="favorite" onClick=addFavourite('${picture.pitcure_id}') style="float:right;"><i class="fa fa-heart-o fa-lg fav" aria-hidden="true"></i></a></p>`
+            else fav = `<p><a class="favorite" onClick="addFavourite('${picture.id}')" style="float:right;"><i id="heart${picture.id}" class="fa fa-heart-o fa-lg fav" aria-hidden="true"></i></a></p>`
 
             $('#pictureList').append( `
           <div class="col-md-4">

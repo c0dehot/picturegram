@@ -9,8 +9,10 @@ const app = express();
 app.use( express.static('public') );
 app.use( express.urlencoded({ extended: false }) );
 
+const userId = 10;
+
 app.get( '/api/thumbnails', async function( req, res ){
-    const myPictureList = await orm.listThumbnails();
+    const myPictureList = await orm.listThumbnails( userId );
     res.send( myPictureList );
 });
 
@@ -43,7 +45,7 @@ app.put( '/api/thumbnails', async function( req, res ){
 app.get('/api/thumbnails/:tag', async function( req, res){
     console.log(`api searcing for elements with tag ${req.params.tag}`)
     tag = JSON.stringify(req.params.tag)
-    const myTagsList = await orm.tagSearch(tag);
+    const myTagsList = await orm.tagSearch( userId, tag);
     console.log(myTagsList)
     let parsedTagsList = JSON.parse(myTagsList);
     console.log(parsedTagsList)
