@@ -14,7 +14,7 @@
 <body>
     <script>
         window.onload = function() {
-            if(localStorage.getItem("email")){
+            if(localStorage.getItem("userId")){
                 location.href = '/index.html';
             }
         };
@@ -58,11 +58,11 @@
                         user_password: $('#userPassword').val()  
                     };
 
-                localStorage.setItem("email", myUser.email_address);
+                
                 let apiResult = await $.post( '/api/registration', myUser );
                 
                 // redirect to the main page (listing thumbnails)
-                location.href = '/index.html';
+                location.href = '/login.html';
 
             })
         })

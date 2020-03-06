@@ -45,16 +45,13 @@ app.put( '/api/thumbnails', async function( req, res ){
 
 
 app.post("/api/checkuser", async function( req, res){
-    console.log(req.body.userPassword);
-    const encryptedPassword = await orm.checkUserStuff(req.body);
-    console.log(encryptedPassword); //encrypted password
-
-    bcrypt.compare(req.body.userPassword, encryptedPassword, function (err, result) {
+    const user = await orm.checkUserStuff(req.body);
+    console.log(user);
+    bcrypt.compare(req.body.userPassword, user.user_password, function (err, result) {
         if (result == true) {
-            console.log(result);
-            res.send(result);
-
-
+            // console.log(result);
+            console.log(user.id)
+            res.send(user);
         } else {
             console.log(result)
             res.send('Incorrect password');
