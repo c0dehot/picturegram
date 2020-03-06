@@ -11,6 +11,13 @@ CREATE TABLE thumbnails (
     update_time DATETIME ON UPDATE CURRENT_TIMESTAMP
 );
 
+CREATE TABLE favourites (
+  id int(11) NOT NULL AUTO_INCREMENT,
+  picture_id int(11) NOT NULL,
+  user_id int(11) DEFAULT NULL
+  PRIMARY KEY (id)
+);
+
 CREATE TABLE users(
 id int NOT NULL AUTO_INCREMENT,
 first_name varchar(50) NOT NULL,
