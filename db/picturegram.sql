@@ -12,14 +12,16 @@ CREATE TABLE thumbnails (
 );
 
 CREATE TABLE users(
-	id INTEGER AUTO_INCREMENT PRIMARY KEY,
-    first_name VARCHAR(50) NOT NULL, 
-    last_name VARCHAR(50) NOT NULL, 
-    email_address VARCHAR(50) NOT NULL,
-    user_password VARCHAR(50) NOT NULL,
-    creation_time DATETIME DEFAULT CURRENT_TIMESTAMP,
-    update_time DATETIME ON UPDATE CURRENT_TIMESTAMP
+id int NOT NULL AUTO_INCREMENT,
+first_name varchar(50) NOT NULL,
+last_name varchar(50) NOT NULL,
+email_address varchar(50) NOT NULL,
+user_password varchar(250) NOT NULL,
+creation_time datetime DEFAULT CURRENT_TIMESTAMP,
+update_time datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+PRIMARY KEY (id)
 );
+
 
 
 # seed.sql
