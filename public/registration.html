@@ -22,10 +22,34 @@
         $(document).ready( async function(){
           // check if editing or new
             $('#submitUserBtn').click( async function(event){
-                // event.preventDefault();
+                event.preventDefault();
                 // disable save button
-                $('#submitUserBtn').prop('disabled', true);
+                // $('#submitUserBtn').prop('disabled', true);
                 // build our save object
+                const usersEmail= $('#userEmail').val();
+                const usersPassword= $('#userPassword').val();
+
+                if( usersEmail == "" ) {
+                        alert( "Please provide your Email!" );
+                        $('#userEmail').focus() ;
+                        return false;
+                    }
+                    if(!(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(usersEmail))) {
+                        alert( "Please provide valid Email!" );
+                        $('#userEmail').focus() ;
+                        return false;
+                    }
+                    if( usersPassword == "" ) {
+                        alert( "Please provide your Password!" );
+                        $('#userPassword').focus() ;
+                        return false;
+                    }
+
+                    if(usersPassword.length <8 ) {
+                        alert( "Please provide a password that is atleast 8 character long" );
+                        $('#userPassword').focus() ;
+                        return false;
+                    }
 
                 const myUser = {
                         first_name: $('#firstName').val(),
@@ -72,7 +96,7 @@
                 </div>
                 <div class="form-group">
                 <label for="email">Email Address</label>
-                <input type="email" id="userEmail" class="form-control" name="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" required >
+                <input type="email" id="userEmail" class="form-control" name="email" >
                 <!-- pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" required -->
                 </div>
                 <div class="form-group">
