@@ -14,7 +14,7 @@ app.use( express.urlencoded({ extended: false }) );
 
 const userId = 10;
 
-app.get( '/api/thumbnails', async function( req, res ){
+app.get( '/api/thumbnails/:userId', async function( req, res ){
     const myPictureList = await orm.listThumbnails( userId );
     res.send( myPictureList );
 });
@@ -45,9 +45,10 @@ app.put( '/api/thumbnails', async function( req, res ){
     res.send( { message: `Thank you, updated ${req.body.name}` } );
 } );
 
-app.get('/api/thumbnails/:tag', async function( req, res){
+app.get('/api/thumbnails/:userId/:tag', async function( req, res){
     console.log(`api searcing for elements with tag ${req.params.tag}`)
-    tag = req.params.tag;
+    const tag = req.params.tag;
+    const userId = req.params;
     console.log(`Calling tag search with: ${userId} ${tag}`)
     const myTagsList = await orm.tagSearch( userId, tag);
     console.log(myTagsList);

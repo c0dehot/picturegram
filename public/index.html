@@ -51,7 +51,7 @@
 
 
         async function addFavourite( picId ){
-          const userId = 10;
+          const userId = localStorage.userId;
           if( !userId){
             return
           }
@@ -63,7 +63,7 @@
         }
 
         async function deleteFavourite( picId ){
-          const userId = 10;
+          const userId = localStorage.userId;
           if( !userId){
             return
           }
@@ -80,22 +80,9 @@
           render(tag);
         }
 
-        function toggleFavourite( id ){
-          // set the heart to other one and make it bigger
-          if( $(`#heart${id}`).hasClass( 'fa-heart' ) ){
-            // toggle off
-            $(`#heart${id}`).removeClass( 'fa-heart' ).addClass( 'fa-heart-o fa-3x' );
-          } else {
-            $(`#heart${id}`).removeClass( 'fa-heart-o' ).addClass( 'fa-heart fa-3x' );
-          }
-          // remove the 2x size
-          setTimeout( function(){ $(`#heart${id}`).addClass('fa-2x').removeClass('fa-3x'); }, 150 );
-          setTimeout( function(){ $(`#heart${id}`).removeClass('fa-2x'); }, 300 );
-        }
-
-        
         async function render(tag=''){
-          const myPictureList = await $.get( `/api/thumbnails/${tag}`)
+          const userId = localStorage.userId;
+          const myPictureList = await $.get( `/api/thumbnails/${userId}/${tag}`)
           
           $('#pictureList').html('');
 
@@ -141,30 +128,6 @@
 }
 
         $(document).ready( async function(){
-
-            // const myPictureList = await $.get( '/api/thumbnails' );
-            // console.log(`myPictureList: ${myPictureList}`)
-            // get picture list and show
-
-           
-
-
-            
-
-            
-            // loop through each and try to set time            
-            // $('.format-date').each( function(){
-            //     const timestamp = $(this).attr('data-timestamp');
-            //     const formattedTime = moment( timestamp ).fromNow();
-            //     $(this).html( formattedTime );
-            // });
-            // document.querySelectorAll('.format-date').forEach( function( el ){
-            //     const id = el.id;
-            //     const timestamp = el.dataset.timestamp;
-            //     const formattedTime = moment( timestamp ).fromNow();
-            //     console.log( `id='${id}', `, document.querySelector(`#pic_${id}`) );
-            //     document.querySelector(`#pic_${id}`).innerText = "woof: "+formattedTime;
-            // } );
             render();
         })
     </script>
