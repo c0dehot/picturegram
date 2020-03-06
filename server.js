@@ -48,7 +48,7 @@ app.put( '/api/thumbnails', async function( req, res ){
 app.get('/api/thumbnails/:userId/:tag', async function( req, res){
     console.log(`api searcing for elements with tag ${req.params.tag}`)
     const tag = req.params.tag;
-    const userId = req.params;
+    const userId = req.params.userId;
     console.log(`Calling tag search with: ${userId} ${tag}`)
     const myTagsList = await orm.tagSearch( userId, tag);
     console.log(myTagsList);
@@ -78,7 +78,7 @@ app.post("/api/checkuser", async function( req, res){
             res.send(user);
         } else {
             console.log(result)
-            res.send('Incorrect password');
+            res.send({ error: 'Sorry, incorrect password' });
         }
 
     });
@@ -98,7 +98,7 @@ app.post( '/api/registration', function( req, res ){
         }).then (function(data){
             console.log(hash);
             if (data){
-                res.send('success!')
+                res.send( { message: 'Your registration worked! success!' } );
             }
         
         })
