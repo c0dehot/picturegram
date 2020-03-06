@@ -42,7 +42,7 @@ app.put( '/api/thumbnails', async function( req, res ){
 
 app.get('/api/thumbnails/:tag', async function( req, res){
     console.log(`api searcing for elements with tag ${req.params.tag}`)
-    const myTagsList = await orm.tagSearch(tag);
+    const myTagsList = await orm.tagSearch(req.params.tag);
     console.log(myTagsList)
     let parsedTagsList = JSON.parse(myTagsList);
     console.log(parsedTagsList)
