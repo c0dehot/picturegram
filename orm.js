@@ -34,8 +34,9 @@ const db = new Database({
 });
 
 async function listThumbnails( userId, tag = '' ){
-    tag =  tag.replace(/\"/g,'');
-    const sql = `SELECT thumbnails.*,favourites.picture_id FROM thumbnails left join favourites ON (thumbnails.id = favourites.picture_id AND favourites.user_id='${userId}') `+( tag ? `WHERE tag LIKE "%${tag}%" ` : `` )+`ORDER BY id`;
+    //tag =  tag.replace(/\"/g,'');
+    console.log(`userId = ${userId} tag = ${tag}`)
+    const sql = `SELECT thumbnails.*,favourites.picture_id FROM thumbnails left join favourites ON (thumbnails.id = favourites.picture_id AND favourites.user_id='${userId}') `+( tag ? `WHERE tags LIKE "%${tag}%" ` : `` )+`ORDER BY id`;
     const myList = await db.query( sql );
     return myList;
 }
@@ -69,6 +70,7 @@ async function getThumbnail( myId ){
 }
 
 async function tagSearch( userId, tag ){
+    console.log(`Calling listThumbnails with ${userId}, ${tag}`)
     return listThumbnails( userId, tag );
     // console.log(`orm tag: ${tag}`)
     // let query = `select * from thumbnails `+( tag ? `where tags like "%${tag.replace('"','').replace('"','')}%"` : '' );

@@ -44,13 +44,12 @@ app.put( '/api/thumbnails', async function( req, res ){
 
 app.get('/api/thumbnails/:tag', async function( req, res){
     console.log(`api searcing for elements with tag ${req.params.tag}`)
-    tag = JSON.stringify(req.params.tag)
+    tag = req.params.tag;
+    console.log(`Calling tag search with: ${userId} ${tag}`)
     const myTagsList = await orm.tagSearch( userId, tag);
-    console.log(myTagsList)
-    let parsedTagsList = JSON.parse(myTagsList);
-    console.log(parsedTagsList)
+    console.log(myTagsList);
 
-    res.send(parsedTagsList);
+    res.send(myTagsList);
 })
 
 app.get( `/api/favourite-add/:userId/:picId`, async function( req, res ){
