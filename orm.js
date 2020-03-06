@@ -29,7 +29,7 @@ const db = new Database({
     host: "localhost",
     port: 3306,
     user: "root",
-    password: "",
+    password: "root",
     database: "pictures"
 });
 
@@ -74,6 +74,7 @@ async function tagSearch( tag ){
     console.log(`orm search: ${JSON.stringify(tagSearchPictures)}`)
     return JSON.stringify(tagSearchPictures);
 
+}
 
 async function addFavourite( userId, picID ){
     const myFav = await db.query ("INSERT INTO favourites (user_id, pic_id) VALUES(?,?)", [ userId, picID ] );
@@ -85,7 +86,7 @@ async function deleteFavourite( userId, picID ){
     return myFav;
 }
 
-}
+
 module.exports = { 
     listThumbnails,
     saveThumbnail,
