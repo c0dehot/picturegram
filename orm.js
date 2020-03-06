@@ -29,7 +29,7 @@ const db = new Database({
     host: "localhost",
     port: 3306,
     user: "root",
-    password: "r00tr00t",
+    password: "bootcamp2020",
     database: "pictures"
 });
 
@@ -63,11 +63,25 @@ async function getThumbnail( myId ){
     const myData = await db.query( "SELECT * FROM thumbnails WHERE id=?", [ myId ] );
     return myData[0];
 }
+async function registerUser( myPost ){
+    const myResult = await db.query( 
+        "INSERT INTO users(first_name,last_name,email_address,user_password) VALUES(?,?,?,?)",
+        [ myPost.first_name, myPost.last_name, myPost.email_address, myPost.user_password ] );
+    return myResult;
+}
+
+async function checkUserStuff(checkUser) {
+    const userInfo = await db.query("SELECT user_password FROM users WHERE email_address=?", [ checkUser.userEmail ] );
+    return userInfo[0].user_password;
+
+}
 
 module.exports = { 
     listThumbnails,
     saveThumbnail,
     deleteThumbnail,
     updateThumbnail,
-    getThumbnail
+    getThumbnail,
+    registerUser,
+    checkUserStuff
 }
