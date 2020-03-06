@@ -76,8 +76,8 @@ async function registerUser( myPost ){
 }
 
 async function checkUserStuff(checkUser) {
-    const userInfo = await db.query("SELECT user_password FROM users WHERE email_address=?", [ checkUser.userEmail ] );
-    return userInfo[0].user_password;
+    const userInfo = await db.query("SELECT * FROM users WHERE email_address=?", [ checkUser.userEmail ] );
+    return userInfo[0];
 
 }
 
