@@ -22,33 +22,23 @@
         $(document).ready( async function(){
           // check if editing or new
             $('#submitUserBtn').click( async function(event){
-                event.preventDefault();
+                // event.preventDefault();
                 // disable save button
                 $('#submitUserBtn').prop('disabled', true);
-                user_password: $('#userPassword').val()
-                const usersEmail= $('#userEmail').val();
-                const usersPassword= $('#userPassword').val();
-
                 // build our save object
-                function Validatpassword(password){
-                if (usersPassword.length>8 )
-                {
-                    const myUser = {
-                            first_name: $('#firstName').val(),
-                            last_name: $('#lastName').val(),
-                            email_address: $('#userEmail').val(),
-                            user_password: $('#userPassword').val()  
-                        };
 
-                        let apiResult = await $.post( '/api/registrtation', myUser );
-                        alert( apiResult.message );
-                        // redirect to the main page (listing thumbnails)
-                        location.href = '/index.html';
-                    return (true)
-                }
-                    alert("the password is less than 8 characters")
-                    return (false)
-                }
+                const myUser = {
+                        first_name: $('#firstName').val(),
+                        last_name: $('#lastName').val(),
+                        email_address: $('#userEmail').val(),
+                        user_password: $('#userPassword').val()  
+                    };
+
+                localStorage.setItem("email", myUser.email_address);
+                let apiResult = await $.post( '/api/registration', myUser );
+                
+                // redirect to the main page (listing thumbnails)
+                location.href = '/index.html';
 
             })
         })
@@ -82,13 +72,15 @@
                 </div>
                 <div class="form-group">
                 <label for="email">Email Address</label>
-                <input type="email" id="userEmail" class="form-control" name="email" pattern="[a-z0-9._% +-]+@[a-z0-9.-]+\.[a-z]+[A-Z0-9._% +-]]{2,}$">
+                <input type="email" id="userEmail" class="form-control" name="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" required >
+                <!-- pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" required -->
                 </div>
                 <div class="form-group">
                     <label for="exampleInputPassword1">Password</label>
-                    <input type="password" id="userPassword" class="form-control" name="psw" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" required>
+                    <input type="password" id="userPassword" class="form-control" name="psw">
+                    <!-- pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" required -->
                 </div>
-                <button id='submitUserBtn' type="submit" class="btn btn-primary submit" >Register </button>
+                <button id='submitUserBtn' type="submit" class="btn btn-primary submit" >Register</button>
             </form>
             </div>
         </div>
