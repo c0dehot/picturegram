@@ -14,7 +14,7 @@
 <body>
     <script>
           window.onload = function() {
-              if(localStorage.getItem("email")){
+              if(localStorage.getItem("userId")){
                   location.href = '/index.html';
               }
           };
@@ -29,15 +29,13 @@
                 userEmail : $("#userEmail").val(),
                 userPassword :  $("#userPassword").val()
             }
-            console.log(userInfo);
             const checkUser = await $.post("/api/checkuser", userInfo);
+            console.log(checkUser.id);
 
-            console.log(checkUser);
-
-            if (checkUser){
+            if (checkUser.id){
               console.log('passwords match!')
 
-              localStorage.setItem("email", userInfo.userEmail);
+              localStorage.setItem("userId", checkUser.id);
 
               console.log("local storage workeddd???")
               location.href = '/index.html';
