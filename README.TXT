@@ -5,5 +5,5 @@
 4. npm install express mysql
 
 You will run this way:
-DB_PWD=r00tr00t node server.js
+DB_PWD=[your-db-password] node server.js
 
