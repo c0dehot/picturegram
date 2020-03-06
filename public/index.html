@@ -86,7 +86,7 @@
             if (picture.picture_id != null){
               fav = `<p><a class="favorite" onClick=deleteFavourite('${picture.picture_id}') style="float:right;"><i class="fa fa-heart fa-lg fav" aria-hidden="true"></i></a></p>`
             }
-            else fav = `<p><a class="favorite" onClick=deleteFavourite('${picture.pitcure_id}') style="float:right;"><i class="fa fa-heart-o fa-lg fav" aria-hidden="true"></i></a></p>`
+            else fav = `<p><a class="favorite" onClick=addFavourite('${picture.pitcure_id}') style="float:right;"><i class="fa fa-heart-o fa-lg fav" aria-hidden="true"></i></a></p>`
 
             $('#pictureList').append( `
           <div class="col-md-4">
