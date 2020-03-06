@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adding a Picture</title>
+
+      <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+
+</head>
+<body>
+    <script>
+          window.onload = function() {
+              if(localStorage.getItem("email")){
+                  location.href = '/index.html';
+              }
+          };
+
+          function registerBtn(){
+            location.href = '/registration.html';
+
+          }
+          async function loginBtn(){
+            console.log('clicked');
+            const userInfo = {
+                userEmail : $("#userEmail").val(),
+                userPassword :  $("#userPassword").val()
+            }
+            console.log(userInfo);
+            const checkUser = await $.post("/api/checkuser", userInfo);
+
+            console.log(checkUser);
+
+            if (checkUser){
+              console.log('passwords match!')
+
+              localStorage.setItem("email", userInfo.userEmail);
+
+              console.log("local storage workeddd???")
+              location.href = '/index.html';
+            }else{    
+              alert("PASSWORD IS NOT CORRECT");
+            }
+
+          }
+    </script>
+
+    <main role="main">
+
+        <section class="jumbotron text-center">
+          <div class="container">
+            <h1>Our Greatest Memories Pinboard</h1>
+            <p>Login to your Pinboard</p>
+          </div>
+        </section>
+      
+        <!-- add picture form -->
+        <div class="container">
+          <div class="card">
+            <div class="card-body">
+              <form role="form">
+                <div class="form-group">
+                  <label for="email">Email Address</label>
+                  <input type="text" class="form-control" id="userEmail">
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputPassword1">Password</label>
+                    <input type="password" class="form-control"  placeholder="Password" id="userPassword">
+                  </div>
+                <button id='submitUserBtn' type="button" class="btn btn-primary submit" onClick="loginBtn()">Login</button>
+                <button id='submitUserBtn' type="button" class="btn btn-primary submit" onClick="registerBtn()">Didn't register?
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+        
+    </main>
+</body>
+</html>

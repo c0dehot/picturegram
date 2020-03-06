@@ -20,7 +20,19 @@
         }
     </style>
 
-    <script>
+    <script>    
+    
+        function logOut(){  
+            localStorage.clear();
+            location.href = '/login.html';
+        }
+
+        window.onload = function() {
+            if(!localStorage.getItem("email")){
+                location.href = '/login.html';
+            }
+        };
+        
         async function deleteThumbnail( id ){
             if( confirm( `Are you SURE you want to delete this?` ) ){
                 const apiResult = await $.ajax({
@@ -38,7 +50,6 @@
         }
 
         $(document).ready( async function(){
-
             const myPictureList = await $.get( '/api/thumbnails' );
             // get picture list and show
             $('#pictureList').html('');
@@ -87,10 +98,14 @@
             // } );
         })
     </script>
+
+    
     <main role="main">
 
         <section class="jumbotron text-center">
           <div class="container">
+            <button id='log' type="submit" class="btn btn-primary submit" onClick="logOut()">Log Out </button>
+
             <h1>Our Greatest Memories Pinboard</h1>
             <p class="lead text-muted">Sometimes you forget how many wonderful memories you have already experienced.</p>
           </div>
