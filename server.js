@@ -50,6 +50,18 @@ app.get('/api/thumbnails/:tag', async function( req, res){
     res.send(parsedTagsList);
 })
 
+app.get( `/api/favourite-add/:userId/:picId`, async function( req, res ){
+    await orm.addFavourite( req.params.userId, req.params.picId );
+    res.send( { message: `Added fav for #${req.params.picId}`} );
+})
+
+
+app.get( `/api/favourite-del/:userId/:picId`, async function( req, res ){
+    const myFav = await orm.deleteFavourite( req.params.userId, req.params.picId );
+    res.send( { message: `Deleted fav for #${req.params.picId}`} );
+})
+
+
 app.listen( PORT, function(){
     console.log( `[pictures] RUNNING, http://localhost:${PORT}` );
 })

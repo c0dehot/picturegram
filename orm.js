@@ -52,6 +52,8 @@ async function deleteThumbnail( id ){
     return myResult;
 }
 
+
+
 async function updateThumbnail( myEdit ){
     const myResult = await db.query( 
         "UPDATE thumbnails SET name=?,image_url=?,tags=? WHERE id=?",
@@ -71,6 +73,18 @@ async function tagSearch( tag ){
     const tagSearchPictures = await db.query(query);
     console.log(`orm search: ${JSON.stringify(tagSearchPictures)}`)
     return JSON.stringify(tagSearchPictures);
+
+
+async function addFavourite( userId, picID ){
+    const myFav = await db.query ("INSERT INTO favourites (user_id, pic_id) VALUES(?,?)", [ userId, picID ] );
+    return myFav;
+}
+
+async function deleteFavourite( userId, picID ){
+    const myFav = await db.query("DELETE FROM favourites WHERE user_id=? AND pic_id=?", [ userId, picID ] );
+    return myFav;
+}
+
 }
 module.exports = { 
     listThumbnails,
@@ -79,4 +93,6 @@ module.exports = {
     updateThumbnail,
     getThumbnail,
     tagSearch,
+    addFavourite,
+    deleteFavourite
 }
