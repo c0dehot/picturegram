@@ -13,38 +13,36 @@
 </head>
 <body>
     <script>
-          window.onload = function() {
-              if(localStorage.getItem("userId")){
-                  location.href = '/index.html';
-              }
-          };
-
-          function registerBtn(){
-            location.href = '/registration.html';
-
+        function registerBtn(){
+          location.href = '/registration.html';
+        }
+        
+        async function loginBtn(){
+          const userData = {
+              userEmail : $("#userEmail").val(),
+              userPassword :  $("#userPassword").val()
           }
-          async function loginBtn(){
-            console.log('clicked');
-            const userInfo = {
-                userEmail : $("#userEmail").val(),
-                userPassword :  $("#userPassword").val()
-            }
-            const checkUser = await $.post("/api/checkuser", userInfo);
-            console.log(checkUser.id);
+          console.log('[loginBtn] sending /api/user/login with: ', userData );
+          const apiResult = await $.post( "/api/user/login", userData );
+          console.log(`<< apiResult: `, apiResult);
 
-            if (checkUser.id){
-              console.log('passwords match!')
+          if (apiResult.userId){
+            console.log('passwords match!')
 
-              localStorage.setItem("userId", checkUser.id);
+            localStorage.setItem("userId", apiResult.userId);
 
-              console.log("local storage workeddd???")
-              location.href = '/index.html';
-            }else{
-              // alert("PASSWORD IS NOT CORRECT");
-              alert( checkUser.error );
-            }
-
+            console.log("local storage workeddd???")
+            location.href = '/index.html';
+          } else {
+            // alert("PASSWORD IS NOT CORRECT");
+            alert( apiResult.error );
           }
+        }
+        
+        $(document).ready(function(){
+          if( localStorage.userId )
+            location.href = '/index.html';
+        });
     </script>
 
     <main role="main">
@@ -62,15 +60,15 @@
             <div class="card-body">
               <form role="form">
                 <div class="form-group">
-                  <label for="email">Email Address</label>
-                  <input type="text" class="form-control" id="userEmail">
+                  <label for="userEmail">Email Address</label>
+                  <input id="userEmail" type="text" class="form-control">
                 </div>
                 <div class="form-group">
-                    <label for="exampleInputPassword1">Password</label>
-                    <input type="password" class="form-control"  placeholder="Password" id="userPassword">
-                  </div>
-                <button id='submitUserBtn' type="button" class="btn btn-primary submit" onClick="loginBtn()">Login</button>
-                <button id='submitUserBtn' type="button" class="btn btn-primary submit" onClick="registerBtn()">Didn't register?
+                  <label for="userPassword">Password</label>
+                  <input id="userPassword"type="password" class="form-control"  placeholder="Password">
+                </div>
+                <button onClick="loginBtn()" type="button" class="btn btn-primary submit">Login</button>
+                <button onClick="registerBtn()" type="button" class="btn btn-primary submit">Didn't register?
                 </button>
               </form>
             </div>

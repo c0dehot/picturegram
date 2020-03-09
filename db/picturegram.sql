@@ -18,6 +18,7 @@ CREATE TABLE favourites (
   PRIMARY key(picture_id,user_id)
 );
 
+DROP table users;
 CREATE TABLE users(
 id int NOT NULL AUTO_INCREMENT,
 first_name varchar(50) NOT NULL,
@@ -28,8 +29,6 @@ creation_time datetime DEFAULT CURRENT_TIMESTAMP,
 update_time datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
 PRIMARY KEY (id)
 );
-
-
 
 # seed.sql
 INSERT INTO thumbnails (name,image_url,tags) VALUES('Dude','https://cdn.quotesgram.com/img/70/46/2076036230-omg-shocked-dog.jpg','shocked,confused,drooling');

@@ -33,11 +33,11 @@
             $('#submitBtn').prop('disabled', true);
 
             // build our save object
-            const myPicture = {
+            const thumbData = {
               name: $('#name').val(),
-              image_url: $('#image_url').val(),
+              imageUrl: $('#image_url').val(),
               tags: $('#tags').val(),
-              id: $('#db_id').val() /* this will only be set if editing */
+              thumbId: $('#db_id').val() /* this will only be set if editing */
             };
 
             let apiResult;
@@ -46,9 +46,11 @@
               apiResult = await $.ajax({
                 url: '/api/thumbnails',
                 type: 'PUT',
-                data: myPicture });
+                data: thumbData });
             } else {
-              apiResult = await $.post( '/api/thumbnails', myPicture );
+              // don't pass thumbId as we don't  have a value
+              delete thumbData.thumbId;
+              apiResult = await $.post( '/api/thumbnails', thumbData );
             }
             
             alert( apiResult.message );

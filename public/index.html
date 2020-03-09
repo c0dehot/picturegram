@@ -26,12 +26,6 @@
             localStorage.clear();
             location.href = '/login.html';
         }
-
-        window.onload = function() {
-            if(!localStorage.getItem("userId")){
-                location.href = '/login.html';
-            }
-        };
         
         async function deleteThumbnail( id ){
             if( confirm( `Are you SURE you want to delete this?` ) ){
@@ -49,29 +43,23 @@
             location.href = `/add_picture.html#${id}`;
         }
 
-
-        async function addFavourite( picId ){
+        async function toggleFavourite( picId, isAlreadyFavourite ){
           const userId = localStorage.userId;
           if( !userId){
             return
           }
-          console.log( `calling GET: /api/favourite-add/${userId}/${picId}` );
-          const apiResult = await $.get(`/api/favourite-add/${userId}/${picId}`)
-          console.log(apiResult);
 
-          render();
-        }
-
-        async function deleteFavourite( picId ){
-          const userId = localStorage.userId;
-          if( !userId){
-            return
+          let apiResult;
+          console.log( `[toggleFavourite] isAlreadyFavourite=`, isAlreadyFavourite );
+          if( isAlreadyFavourite>0 ){
+            // turn favourite off
+            apiResult = await $.get(`/api/favourite-del/${userId}/${picId}`)
+          } else {
+            apiResult = await $.get(`/api/favourite-add/${userId}/${picId}`)
           }
-          const apiResult = await $.get(`/api/favourite-del/${userId}/${picId}`)
           console.log(apiResult);
-          render();
-         
 
+          render();
         }
 
         async function searchTag(tag){
@@ -89,34 +77,26 @@
 
           myPictureList.forEach( function( picture ){
             // format the time (relative to now, ex 5 minutes ago)
-            console.log(picture.picture_id);
-            const formattedTime = moment( picture.creation_time ).fromNow();
+            const formattedTime = moment( picture.creationTime ).fromNow();
 
             // build the badges
             let tagsHtml = '';
             const tags = picture.tags.split(',');
             tags.forEach( function( tag ){
                 tagsHtml += `<span class="badge badge-pill badge-info is-light" onClick="searchTag('${tag.trim()}')">${tag.trim()}</span> `;
-            
-                // let favourite = ''
             });
-            let fav = '';
-            if (picture.picture_id != null){
-              fav = `<p><a class="favorite" onClick="deleteFavourite('${picture.id}')" style="float:right;"><i id="heart${picture.id}" class="fa fa-heart fa-lg fav" aria-hidden="true"></i></a></p>`
-            }
-            else fav = `<p><a class="favorite" onClick="addFavourite('${picture.id}')" style="float:right;"><i id="heart${picture.id}" class="fa fa-heart-o fa-lg fav" aria-hidden="true"></i></a></p>`
 
             $('#pictureList').append( `
           <div class="col-md-4">
             <div class="card mb-4 shadow-sm h-100">
-              <img src="${picture.image_url}" class="thumbnail-size img-fluid" preserveAspectRatio="xMidYMid slice" />
+              <img src="${picture.imageUrl}" class="thumbnail-size img-fluid" preserveAspectRatio="xMidYMid slice" />
               <div class="card-body">
-                ${fav}
+                <p><a class="favorite" onClick="toggleFavourite('${picture.thumbId}','${picture.isFavourite}')" style="float:right;"><i id="heart${picture.thumbId}" class="fa ${picture.isFavourite ? 'fa-heart' : 'fa-heart-o'} fa-lg fav" aria-hidden="true"></i></a></p>
                 <p class="card-text"><b>${picture.name}</b>: ${tagsHtml} </p>
                 <div class="d-flex justify-content-between align-items-center">
                   <div class="btn-group">
-                    <button onClick="editThumbnail('${picture.id}')" type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                    <button onClick="deleteThumbnail('${picture.id}')" type="button" class="btn btn-sm btn-outline-secondary">Delete</button>
+                    <button onClick="editThumbnail('${picture.thumbId}')" type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                    <button onClick="deleteThumbnail('${picture.thumbId}')" type="button" class="btn btn-sm btn-outline-secondary">Delete</button>
                   </div>
                   <small class="text-small text-muted format-date" style='padding-left:7px; font-size: -1;'>${formattedTime}</small>
                 </div>
@@ -129,7 +109,10 @@
 }
 
         $(document).ready( async function(){
-            render();
+            if( !localStorage.userId )
+              location.href = '/login.html';
+            else
+              render();
         })
     </script>
 

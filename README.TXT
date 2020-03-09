@@ -1,3 +1,4 @@
+
 # Creation Steps #
 1. Create html directory, and put static files in there
 2. Create server.js file
@@ -9,3 +10,6 @@
 Run normally:
 node server.js
 
+# Contributors #
+Filipe Laborde-Basto: fil.laborde@gmail.com // https://github.com/codefreeze8
+Majid Paktinat: majid.paktinat@gmail.com // https://github.com/majid-paktinat
