@@ -1,12 +1,12 @@
-/* this is our server file that will give us all the cool stuff we need */
+require('dotenv').config();
+
 const express = require( 'express' );
-const bcrypt = require ("bcrypt");
-
-const PORT = process.env.PORT || 8080;
-
+const bcrypt = require ( 'bcrypt' );
 const orm = require( './orm' );
 
+const PORT = process.env.PORT || 8080;
 const saltRounds = 10;
+
 const app = express();
 
 app.use( express.static('public') );
