@@ -11,5 +11,4 @@ Run normally:
 node server.js
 
 # Contributors #
-Filipe Laborde-Basto: fil.laborde@gmail.com // https://github.com/codefreeze8
-Majid Paktinat: majid.paktinat@gmail.com // https://github.com/majid-paktinat
+[See docs/contributing.md](https://github.com/codefreeze8/picturegram/blob/master/docs/contributing.md)
