@@ -52,7 +52,7 @@
           let apiResult;
           console.log( `[toggleFavourite] isAlreadyFavourite=(${isAlreadyFavourite})`, isAlreadyFavourite!==false );
           /* It should be passed in as boolean */
-          if( isAlreadyFavourite !== false ){
+          if( isAlreadyFavourite ){
             // turn favourite off
             apiResult = await $.get(`/api/favourite-del/${userId}/${picId}`)
           } else {

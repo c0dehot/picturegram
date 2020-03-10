@@ -10,7 +10,8 @@ const db = require( './models' );
 // output: <array> [{thumbId, name, imageUrl, tags, creationTime, isFavourite }]
 async function listThumbnails( userId, tag='' ){
    // if a tag is given do a find-where 'tag' in tags
-   const thumbList = tag ? await db.thumbnail.find({ $in: {tags: tag}}) : await db.thumbnail.find();
+   const thumbList = tag==='' ? await db.thumbnail.find()
+      : await db.thumbnail.find().$where(`this.tags.indexOf('${tag}') > -1`);
 
    // now get the corresponding user likes
    let userFavouriteList = await db.users.findOne({ _id: userId }, 'favourites' );
