@@ -21,9 +21,9 @@
             const editData = await $.get( `/api/thumbnail/${editId}` );
             // set up the form
             $('#name').val( editData.name );
-            $('#image_url').val( editData.image_url );
+            $('#imageUrl').val( editData.imageUrl );
             $('#tags').val( editData.tags );
-            $('#db_id').val( editData.id );
+            $('#thumbId').val( editData.thumbId );
           }
 
           $('#submitBtn').click( async function(event){
@@ -35,13 +35,13 @@
             // build our save object
             const thumbData = {
               name: $('#name').val(),
-              imageUrl: $('#image_url').val(),
+              imageUrl: $('#imageUrl').val(),
               tags: $('#tags').val(),
-              thumbId: $('#db_id').val() /* this will only be set if editing */
+              thumbId: $('#thumbId').val() /* this will only be set if editing */
             };
 
             let apiResult;
-            if( $('#db_id').val() ){
+            if( $('#thumbId').val() ){
               // edit
               apiResult = await $.ajax({
                 url: '/api/thumbnails',
@@ -77,14 +77,14 @@
             </div>
             <div class="card-body">
               <form role="form">
-                <input type='hidden' id='db_id' value=''>
+                <input type='hidden' id='thumbId' value=''>
                 <div class="form-group">
                   <label for="name">Name</label>
                   <input type="text" class="form-control" id="name">
                 </div>
                 <div class="form-group">
-                  <label for="image_url">Image URL</label>
-                  <input type="text" class="form-control" id="image_url">
+                  <label for="imageUrl">Image URL</label>
+                  <input type="text" class="form-control" id="imageUrl">
                 </div>
                 <div class="form-group">
                   <label for="tags">Tags</label>

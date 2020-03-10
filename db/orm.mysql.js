@@ -1,6 +1,5 @@
 const mysql = require( 'mysql' );
 const bcrypt = require ( 'bcrypt' );
-const saltRounds = 10;
 
 class Database {
    constructor( config ) {
@@ -36,7 +35,8 @@ const db = new Database({
    database: process.env.DB_NAME
 });
 
-// listThumbnails with tagSearch too
+// input : userId, tag*
+// output: <array> [{thumbId, name, imageUrl, tags, creationTime, isFavourite }]
 async function listThumbnails( userId, tag = '' ){
    //tag =  tag.replace(/\"/g,'');
    console.log(`userId = ${userId} tag = ${tag}`);
@@ -58,6 +58,8 @@ async function listThumbnails( userId, tag = '' ){
    return myList;
 }
 
+// input: <object> { name, imageUrl, tags }
+// output: boolean on success
 async function saveThumbnail( myPost ){
    const myResult = await db.query(
       'INSERT INTO thumbnails (name,image_url,tags) VALUES(?,?,?)',
@@ -65,6 +67,8 @@ async function saveThumbnail( myPost ){
    return myResult;
 }
 
+// input: { thumbId }
+// output: boolean on success
 async function deleteThumbnail( thumbId ){
    const myResult = await db.query(
       'DELETE FROM thumbnails WHERE id=?', [ thumbId ]
@@ -72,13 +76,17 @@ async function deleteThumbnail( thumbId ){
    return myResult;
 }
 
-async function updateThumbnail( thumbData ){
+// input: thumbId, <object> { name, imageUrl, tags }
+// output: boolean on success
+async function updateThumbnail( thumbId, thumbData ){
    const myResult = await db.query(
       'UPDATE thumbnails SET name=?,image_url=?,tags=? WHERE id=?',
-      [ thumbData.name, thumbData.imageUrl, thumbData.tags, thumbData.thumbId ] );
+      [ thumbData.name, thumbData.imageUrl, thumbData.tags, thumbId ] );
    return myResult;
 }
 
+// input: thumbId
+// output: { thumbId, name, imageUrl, tags, creationTime } || false
 async function getThumbnail( thumbId ){
    const myData = await db.query( 'SELECT * FROM thumbnails WHERE id=?', [ thumbId ] );
    if( !myData ) {
@@ -94,6 +102,8 @@ async function getThumbnail( thumbId ){
    }
 }
 
+// input: <object> { firstName, lastName, emailAddress, userPassword }
+// output: userId
 async function registerUser( userData ){
 //* Encryption: (MD5 // SHA2 // BLOWFISH // ...)
    //* ===========
@@ -109,6 +119,7 @@ async function registerUser( userData ){
    //* 2. System hashes user password with salt: hash('test123_sdfsfd') --> *(SDF)98(*DSFHJKL#RWSFD)
    //* 3. Checks if this hashed password matches what's in database.
    //* -->   sdfsfd|(ENCRYPTEDPASSWORD)
+   const saltRounds = 10;
    const passwordHash = await bcrypt.hash(userData.userPassword, saltRounds);
    console.log( `[registerUser] (hash=${passwordHash}) req.body:`, userData );
    const myResult = await db.query(
@@ -117,6 +128,8 @@ async function registerUser( userData ){
    return myResult.insertId ? myResult.insertId : false;
 }
 
+// input: email, password
+// output: <object> { userId, firstName, lastName, emailAddress, creationTime } || false
 async function loginUser( email, password ) {
    const userFetch = await db.query('SELECT * FROM users WHERE email_address=?', [ email ] );
    console.log( `[loadUser] email='${email}' userFetch:`, userFetch );
@@ -129,6 +142,7 @@ async function loginUser( email, password ) {
    if( !isValidPassword ) {
       return false;
    }
+
    // remap the data into the specified fields as we are using camelCase
    const userData = {
       userId: userFetch[0].id,
@@ -140,13 +154,17 @@ async function loginUser( email, password ) {
    return userData;
 }
 
-async function addFavourite( userId, picID ){
-   const myFav = await db.query ('REPLACE INTO favourites (user_id, picture_id) VALUES(?,?)', [ userId, picID ] );
+// input: userId, thumbId
+// output: boolean on success
+async function addFavourite( userId, thumbId ){
+   const myFav = await db.query ('REPLACE INTO favourites (user_id, picture_id) VALUES(?,?)', [ userId, thumbId ] );
    return myFav ? true : false;
 }
 
-async function deleteFavourite( userId, picID ){
-   const myFav = await db.query('DELETE FROM favourites WHERE user_id=? AND picture_id=?', [ userId, picID ] );
+// input: userId, thumbId
+// output: boolean on success
+async function deleteFavourite( userId, thumbId ){
+   const myFav = await db.query('DELETE FROM favourites WHERE user_id=? AND picture_id=?', [ userId, thumbId ] );
    return myFav ? true : false;
 }
 

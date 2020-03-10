@@ -1,13 +1,13 @@
 
 const mongoose = require('mongoose');
-const schema = mongoose.Schema;
- 
-let thumbnail = new schema ({
-    name : String,
-    image_url : String,
-    tags : String,
-    creation_time : {type: Date, default: Date.now},
-    update_time : {type: Date , default: Date.now}
+const Schema = mongoose.Schema;
+
+let thumbnail = new Schema ({
+   name : String,
+   imageUrl : String,
+   tags : String,
+   creationTime : {type: Date, default: Date.now},
+   updateTime : {type: Date , default: Date.now}
 });
 
 module.exports = mongoose.model('thumbnail', thumbnail);
