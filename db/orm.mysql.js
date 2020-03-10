@@ -52,7 +52,7 @@ async function listThumbnails( userId, tag = '' ){
          imageUrl: item.image_url,
          tags: item.tags,
          creationTime: item.creation_time,
-         isFavourite: item.picture_id
+         isFavourite: item.picture_id ? true : false /* MUST be false if not valid */
       });
    });
    return myList;
@@ -88,16 +88,16 @@ async function updateThumbnail( thumbId, thumbData ){
 // input: thumbId
 // output: { thumbId, name, imageUrl, tags, creationTime } || false
 async function getThumbnail( thumbId ){
-   const myData = await db.query( 'SELECT * FROM thumbnails WHERE id=?', [ thumbId ] );
-   if( !myData ) {
+   const dbData = await db.query( 'SELECT * FROM thumbnails WHERE id=?', [ thumbId ] );
+   if( !dbData ) {
       return false;
    } else {
       return {
-         thumbId: myData[0].id,
-         name: myData[0].name,
-         imageUrl: myData[0].image_url,
-         tags: myData[0].tags,
-         creationTime: myData[0].creation_time
+         thumbId: dbData[0].id,
+         name: dbData[0].name,
+         imageUrl: dbData[0].image_url,
+         tags: dbData[0].tags,
+         creationTime: dbData[0].creation_time
       };
    }
 }

@@ -1,15 +1,13 @@
-module.exports = function() {
-   // load models from model directory
-   const fs = require('fs');
-   const files = fs.readdirSync('./models');
-   let db = {};
-   var filename = '';
-   for(var i=0; i<files.length; i++){
-      filename = files[i].split('.')[0];
-      if( filename !== 'index' ){
-         db[filename] = require('./models/' + files[i]);
-         console.log('> loaded model ' + filename);
-      }
+// load models from model directory
+const fs = require('fs');
+const files = fs.readdirSync(__dirname);
+let db = {};
+files.forEach( function( filename ){
+   let filebase = filename.split('.')[0];
+   if( filename !== 'index.js' ) {
+      console.log(`   > loading mongoose model: ${filename}`);
+      db[filebase] = require(`${__dirname}/${filename}`);
    }
-   return db;
-};
+});
+
+module.exports = db;

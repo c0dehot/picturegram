@@ -8,22 +8,29 @@ const db = require( './models' );
 
 // input : userId, tag*
 // output: <array> [{thumbId, name, imageUrl, tags, creationTime, isFavourite }]
-function listThumbnails( userId, tag='' ){
-   const thumbList = tag ? db.thumbnail.find({ $in: {tags: tag}}) : db.thumbnail.find();
+async function listThumbnails( userId, tag='' ){
+   // if a tag is given do a find-where 'tag' in tags
+   const thumbList = tag ? await db.thumbnail.find({ $in: {tags: tag}}) : await db.thumbnail.find();
 
-   // get the corresponding user likes
-   const userFavouriteList = db.users.find({ _id: userId });
+   // now get the corresponding user likes
+   let userFavouriteList = await db.users.findOne({ _id: userId }, 'favourites' );
+   userFavouriteList = userFavouriteList.favourites;
+   console.log( 'userFavouriteList', userFavouriteList );
 
    // now clean up the list and return relevant data in camelCase
    let myList = [];
    thumbList.forEach( function( item ){
+      console.log( `fav for ${item._id}?`,
+         userFavouriteList.filter( fav=>String(fav)===String(item._id) ).length>0 ? item._id : false );
       myList.push({
          thumbId: item._id,
          name: item.name,
          imageUrl: item.imageUrl,
          tags: item.tags,
-         creationTime: item.creationTime,
-         isFavourite: userFavouriteList.favorites.filter( fav=>fav.thumbId===item._id )
+         creationTime: item.createdAt,
+         // GOTCHA: 'fav' and item._id are typeof: objects ... pointing to different things so must cast to string
+         isFavourite: !userFavouriteList ? false :
+            userFavouriteList.filter( fav=>String(fav)===String(item._id) ).length>0 ? true : false
       });
    });
    return myList;
@@ -37,14 +44,14 @@ function saveThumbnail( myData ){
       imageUrl: myData.imageUrl,
       tags: myData.tags
    };
-   const dbThumbnail = new Thumbnail(thumbnailData);
+   const dbThumbnail = new db.thumbnail(thumbnailData);
    return dbThumbnail.save();
 }
 
 // input: { thumbId }
 // output: boolean on success
 function deleteThumbnail( thumbId ){
-   return Thumbnail.findByIdAndDelete(thumbId);
+   return db.thumbnail.findByIdAndDelete(thumbId);
 }
 
 // input: thumbId, <object> { name, imageUrl, tags }
@@ -57,13 +64,25 @@ async function updateThumbnail( thumbId, myData ){
       imageUrl: myData.imageUrl,
       tags: myData.tags
    };
-   return Thumbnail.findByIdAndUpdate(myData._id, thumbnailData);
+   return db.thumbnail.findByIdAndUpdate(myData._id, thumbnailData);
 }
 
 // input: thumbId
 // output: { thumbId, name, imageUrl, tags, creationTime } || false
 async function getThumbnail( thumbId ){
-   return Thumbnail.findById(thumbId);
+   const dbData = await db.thumbnail.findById(thumbId);
+   console.log( '[getThumbnail] dbData', dbData );
+   if( !dbData ) {
+      return false;
+   }
+   /* return consistent format data */
+   return {
+      thumbId: dbData._id,
+      name: dbData.name,
+      imageUrl: dbData.imageUrl,
+      tags: dbData.tags,
+      creationTime: dbData.createdAt
+   };
 }
 
 // input: <object> { firstName, lastName, emailAddress, userPassword }
@@ -79,14 +98,15 @@ async function registerUser( userData ){
       emailAddress: userData.emailAddress,
       userPassword: passwordHash
    };
-   const newUser = new users( saveData );
-   return newUser.save();
+   const dbUser = new db.users( saveData );
+   const saveUser = await dbUser.save();
+   return saveUser._id;
 }
 
 // input: email, password
 // output: <object> { userId, firstName, lastName, emailAddress, creationTime } || false
 async function loginUser( email, password ) {
-   const userFetch = user.findOne({ emailAddress: email },'userPassword');
+   const userFetch = await db.users.findOne({ emailAddress: email });
    console.log( `[loadUser] email='${email}' userFetch:`, userFetch );
    if( !userFetch ) {
       return false;
@@ -101,21 +121,30 @@ async function loginUser( email, password ) {
    // remap the data into the specified fields as we are using camelCase
    const userData = {
       userId: userFetch._id,
-      firstName, lastName, emailAddress, creationTime
+      firstName: userFetch.firstName,
+      lastName: userFetch.lastName,
+      emailAddress: userFetch.emailAddress,
+      creationTime: userFetch.createdAt
    };
    return userData;
 }
 
 // input: userId, thumbId
 // output: boolean on success
-function addFavourite(userID, thumbId){
-   return user.update({ObjectId:userID}, {$push: {favorites: thumbId}});
+async function addFavourite(userId, thumbId){
+   // const dbResult = await db.users.updateOne({_id:userID}, {$push: {favourites: mongoose.Types.ObjectId(thumbId)}});
+   console.log( `[addFavourite] updateOne {_id:${userId}}}, {$push: ${thumbId} }`);
+   const dbResult = await db.users.updateOne({_id:userId}, { $push: { favourites: mongoose.Types.ObjectId(thumbId) } });
+   console.log( '[addFavourite\]', dbResult, dbResult.ok );
+   return dbResult.ok ? true : false;
 }
 
 // input: userId, thumbId
 // output: boolean on success
-function deleteFavourite(userId, thumbId){
-   return user.update({ObjectId:userId}, {$pull: {favorites: thumbId}});
+async function deleteFavourite(userId, thumbId){
+   // const dbResult = await db.users.update({ObjectId:userId}, {$pull: {favourites: mongoose.Types.ObjectId(thumbId)}});
+   const dbResult = await db.users.updateOne({_id:userId}, { $pull: { favourites: mongoose.Types.ObjectId(thumbId) } });
+   return dbResult.ok ? true : false;
 }
 
 module.exports = {

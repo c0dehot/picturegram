@@ -50,8 +50,9 @@
           }
 
           let apiResult;
-          console.log( `[toggleFavourite] isAlreadyFavourite=`, isAlreadyFavourite );
-          if( isAlreadyFavourite>0 ){
+          console.log( `[toggleFavourite] isAlreadyFavourite=(${isAlreadyFavourite})`, isAlreadyFavourite!==false );
+          /* It should be passed in as boolean */
+          if( isAlreadyFavourite !== false ){
             // turn favourite off
             apiResult = await $.get(`/api/favourite-del/${userId}/${picId}`)
           } else {
@@ -91,7 +92,7 @@
             <div class="card mb-4 shadow-sm h-100">
               <img src="${picture.imageUrl}" class="thumbnail-size img-fluid" preserveAspectRatio="xMidYMid slice" />
               <div class="card-body">
-                <p><a class="favorite" onClick="toggleFavourite('${picture.thumbId}','${picture.isFavourite}')" style="float:right;"><i id="heart${picture.thumbId}" class="fa ${picture.isFavourite ? 'fa-heart' : 'fa-heart-o'} fa-lg fav" aria-hidden="true"></i></a></p>
+                <p><a class="favorite" onClick="toggleFavourite('${picture.thumbId}',${picture.isFavourite})" style="float:right;"><i id="heart${picture.thumbId}" class="fa ${picture.isFavourite!=false ? 'fa-heart' : 'fa-heart-o'} fa-lg fav" aria-hidden="true"></i></a></p>
                 <p class="card-text"><b>${picture.name}</b>: ${tagsHtml} </p>
                 <div class="d-flex justify-content-between align-items-center">
                   <div class="btn-group">

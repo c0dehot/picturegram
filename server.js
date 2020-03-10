@@ -56,14 +56,16 @@ app.delete( '/api/thumbnail/:thumbId', async function( req, res ){
 
 
 // == favourites ==
-app.get( '/api/favourite-add/:userId/:picId', async function( req, res ){
-   await orm.addFavourite( req.params.userId, req.params.picId );
-   res.send( { message: `Added fav for #${req.params.picId}`} );
+app.get( '/api/favourite-add/:userId/:thumbId', async function( req, res ){
+   const ormResult = await orm.addFavourite( req.params.userId, req.params.thumbId );
+   console.log( `[api/favourite-add] userId(${req.params.userId}) thumbId(${req.params.thumbId})`, ormResult);
+   res.send( { message: `Added fav for #${req.params.thumbId}`} );
 });
 
-app.get( '/api/favourite-del/:userId/:picId', async function( req, res ){
-   await orm.deleteFavourite( req.params.userId, req.params.picId );
-   res.send( { message: `Deleted fav for #${req.params.picId}`} );
+app.get( '/api/favourite-del/:userId/:thumbId', async function( req, res ){
+   const ormResult = await orm.deleteFavourite( req.params.userId, req.params.thumbId );
+   console.log( `[api/favourite-add] userId(${req.params.userId}) thumbId(${req.params.thumbId})`, ormResult);
+   res.send( { message: `Deleted fav for #${req.params.thumbId}`} );
 });
 
 

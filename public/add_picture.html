@@ -16,7 +16,7 @@
         $(document).ready( async function(){
           // check if editing or new
           const editId = location.hash.substr(1);
-          if( editId && editId>0 ){
+          if( editId ){
             // looks like the user is wanting to edit this entry
             const editData = await $.get( `/api/thumbnail/${editId}` );
             // set up the form
@@ -41,7 +41,8 @@
             };
 
             let apiResult;
-            if( $('#thumbId').val() ){
+            console.log( `.. deciding on POST/PUT thumbId=(${$('#thumbId').val()}) set(${$('#thumbId').val()!==''}` );
+            if( $('#thumbId').val() !=='' ){
               // edit
               apiResult = await $.ajax({
                 url: '/api/thumbnails',

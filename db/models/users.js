@@ -2,13 +2,16 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 let users = new Schema ({
-   firstName : String,
-   lastName : String,
-   emailAddress : String,
-   userPassword : String,
-   creationTime : {type: Date, default: Date.now},
-   updateTime : {type: Date, default: Date.now},
-   favorites: [{thumbId:Number, favoriteTime: {type: Date, default: Date.now}}]
+   firstName :  { type: String, trim: true },
+   lastName :  { type: String, trim: true },
+   emailAddress :  { type: String, required: true, trim: true, match: [/.+@.+\..+/, 'Please enter a valid e-mail address'] },
+   userPassword :  { type: String, required: true, trim: true },
+   // favourites: [{
+   //    thumbId: mongoose.Types.ObjectId,
+   //    favouriteTime: {type: Date, default: Date.now} }]
+   favourites: [ mongoose.Types.ObjectId ]
+}, {
+   timestamps: true /* creates corresponding timestamp fields: createdAt, updatedAt */
 });
 
 module.exports = mongoose.model('users', users);
