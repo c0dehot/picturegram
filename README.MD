@@ -6,6 +6,7 @@
 4. npm install express mysql
 5. Create a file called .env, with an entry:
     DB_PWD=[your-db-password]
+    DB_NAME=[db-name]
 
 Run normally:
 node server.js
