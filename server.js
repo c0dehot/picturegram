@@ -1,8 +1,8 @@
 require('dotenv').config(); // --> process.env
-const fs = require('fs');
 const express = require( 'express' );
 const orm = require( './db/orm.mongoose' );
 // const orm = require( './db/orm.mysql' );
+const filePathWithResize = require( './filePathWithResize' );
 
 const PORT = process.env.PORT || 8080;
 
@@ -16,15 +16,6 @@ app.use( express.urlencoded({ extended: false }) );
 // any initialization stuff goes here
 
 // == thumbnails ==
-// quick function used for file uploads to rename with extension
-function fileUrlWithExtension( filePath, originalName ){
-   const fileExt = originalName.toLowerCase().substr((originalName.lastIndexOf('.')));
-   const filePathWithExt = filePath+fileExt;
-   fs.renameSync( `${__dirname}/${filePath}`, `${__dirname}/${filePathWithExt}` );
-   // get rid of 'public' which is where all the html content/media is in by default
-   return filePathWithExt.replace('public/','');
-}
-
 app.get('/api/thumbnails/:userId/:tag?', async function( req, res ){
    const tag = req.params.tag;
    const userId = req.params.userId;
@@ -40,11 +31,12 @@ app.post( '/api/thumbnails', upload.single('imageFile'), async function( req, re
    let thumbData = req.body;
    // if they uploaded a file, let's add it to the thumbData
    if( req.file ){
-      const imageUrl = fileUrlWithExtension(req.file.path, req.file.originalname);
+      const [ resizeWidth, resizeHeight ] = thumbData.imageSize.split('x');
+      const imageUrl = await filePathWithResize(req.file.path, req.file.originalname, resizeWidth, resizeHeight);
       // assign in the thumbData so can use as normal
       thumbData.imageUrl = imageUrl;
    }
-   console.log( '[POST api/thumbnails] recieved'+(req.file ? '; attached file':''), thumbData );
+   console.log( '[POST api/thumbnails] recieved'+(req.file ? `; attached file @ ${thumbData.imageSize}`:''), thumbData );
 
    if( thumbData.imageUrl==='' ) {
       // we can't save this picturegram without an image so abort
@@ -60,11 +52,12 @@ app.put( '/api/thumbnails', upload.single('imageFile'), async function( req, res
    let thumbData = req.body;
    // if they uploaded a file, let's add it to the thumbData
    if( req.file ){
-      const imageUrl = fileUrlWithExtension(req.file.path, req.file.originalname);
+      const [ resizeWidth, resizeHeight ] = thumbData.imageSize.split('x');
+      const imageUrl = await filePathWithResize(req.file.path, req.file.originalname, resizeWidth, resizeHeight);
       // assign in the thumbData so can use as normal
       thumbData.imageUrl = imageUrl;
    }
-   console.log( `[PUT api/thumbnails] thumbId: ${thumbId}`+(req.file ? '; attached file':''), thumbData );
+   console.log( `[PUT api/thumbnails] thumbId: ${thumbId}`+(req.file ? `; attached file @ ${thumbData.imageSize}`:''), thumbData );
 
    if( thumbData.imageUrl==='' ) {
       res.send( { error: `Sorry problem uploading ${thumbData.name}` } );
