@@ -59,11 +59,20 @@ async function listThumbnails( userId, tag = '' ){
 }
 
 // input: <object> { name, imageUrl, tags }
-// output: boolean on success
+// output: thumbId on success, false otherwise
 async function saveThumbnail( myPost ){
    const myResult = await db.query(
       'INSERT INTO thumbnails (name,image_url,tags) VALUES(?,?,?)',
       [ myPost.name, myPost.imageUrl, myPost.tags ] );
+   return myResult;
+}
+
+// input: thumbId, <object> { name, imageUrl, tags }
+// output: thumbId on success or false
+async function updateThumbnail( thumbId, thumbData ){
+   const myResult = await db.query(
+      'UPDATE thumbnails SET name=?,image_url=?,tags=? WHERE id=?',
+      [ thumbData.name, thumbData.imageUrl, thumbData.tags, thumbId ] );
    return myResult;
 }
 
@@ -73,15 +82,6 @@ async function deleteThumbnail( thumbId ){
    const myResult = await db.query(
       'DELETE FROM thumbnails WHERE id=?', [ thumbId ]
    );
-   return myResult;
-}
-
-// input: thumbId, <object> { name, imageUrl, tags }
-// output: boolean on success
-async function updateThumbnail( thumbId, thumbData ){
-   const myResult = await db.query(
-      'UPDATE thumbnails SET name=?,image_url=?,tags=? WHERE id=?',
-      [ thumbData.name, thumbData.imageUrl, thumbData.tags, thumbId ] );
    return myResult;
 }
 

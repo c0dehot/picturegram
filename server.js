@@ -1,19 +1,30 @@
 require('dotenv').config(); // --> process.env
-
+const fs = require('fs');
 const express = require( 'express' );
-// our bcrypt logic will be in the orm package
-// const orm = require( './db/orm.mysql' );
 const orm = require( './db/orm.mongoose' );
+// const orm = require( './db/orm.mysql' );
 
 const PORT = process.env.PORT || 8080;
 
 const app = express();
+const upload = require('multer')({ dest: 'public/uploads/' });
 
 app.use( express.static('public') );
 app.use( express.urlencoded({ extended: false }) );
 
+// == init ==
+// any initialization stuff goes here
 
 // == thumbnails ==
+// quick function used for file uploads to rename with extension
+function fileUrlWithExtension( filePath, originalName ){
+   const fileExt = originalName.toLowerCase().substr((originalName.lastIndexOf('.')));
+   const filePathWithExt = filePath+fileExt;
+   fs.renameSync( `${__dirname}/${filePath}`, `${__dirname}/${filePathWithExt}` );
+   // get rid of 'public' which is where all the html content/media is in by default
+   return filePathWithExt.replace('public/','');
+}
+
 app.get('/api/thumbnails/:userId/:tag?', async function( req, res ){
    const tag = req.params.tag;
    const userId = req.params.userId;
@@ -24,18 +35,41 @@ app.get('/api/thumbnails/:userId/:tag?', async function( req, res ){
    res.send( myPictureList );
 });
 
-app.post( '/api/thumbnails', async function( req, res ){
-   const thumbData = req.body;
-   console.log( '[POST api/thumbnails] recieved: ', thumbData );
-   await orm.saveThumbnail( thumbData );
+// media upload is optional
+app.post( '/api/thumbnails', upload.single('imageFile'), async function( req, res ){ //single('media')
+   let thumbData = req.body;
+   // if they uploaded a file, let's add it to the thumbData
+   if( req.file ){
+      const imageUrl = fileUrlWithExtension(req.file.path, req.file.originalname);
+      // assign in the thumbData so can use as normal
+      thumbData.imageUrl = imageUrl;
+   }
+   console.log( '[POST api/thumbnails] recieved'+(req.file ? '; attached file':''), thumbData );
 
+   if( thumbData.imageUrl==='' ) {
+      // we can't save this picturegram without an image so abort
+      res.send( { error: `Sorry problem uploading ${thumbData.name}` } );
+   }
+
+   await orm.saveThumbnail( thumbData );
    res.send( { message: `Thank you, saved ${thumbData.name}` } );
 });
 
-app.put( '/api/thumbnails', async function( req, res ){
+app.put( '/api/thumbnails', upload.single('imageFile'), async function( req, res ){
    const thumbId = req.body.thumbId;
-   const thumbData = req.body;
-   console.log( `[PUT api/thumbnails] thumbId: ${thumbId}` );
+   let thumbData = req.body;
+   // if they uploaded a file, let's add it to the thumbData
+   if( req.file ){
+      const imageUrl = fileUrlWithExtension(req.file.path, req.file.originalname);
+      // assign in the thumbData so can use as normal
+      thumbData.imageUrl = imageUrl;
+   }
+   console.log( `[PUT api/thumbnails] thumbId: ${thumbId}`+(req.file ? '; attached file':''), thumbData );
+
+   if( thumbData.imageUrl==='' ) {
+      res.send( { error: `Sorry problem uploading ${thumbData.name}` } );
+   }
+
    await orm.updateThumbnail( thumbId, thumbData );
 
    res.send( { message: `Thank you, updated ${thumbData.name}` } );
@@ -99,6 +133,28 @@ app.post( '/api/user/registration', async function( req, res ){
    }
 } );
 
+// == error handling
+
+// Error handling Middleware; first line allows second one to run
+// each method needs to be wrapped in errorCatcher
+app.use(function(err, req, res, next) {
+   if(!err) {
+      return next();
+   }
+   const status = error.status || 500;
+   const message = error.message || 'Something went wrong';
+
+   console.log(`**ERROR** Caught: ${status} / ${message}`);
+   res.status(status).send({ status, message });
+});
+// == process-wide error handling
+process.on('uncaughtException', err => {
+   console.error('There was an uncaught error', err);
+   process.exit(1); //mandatory (as per the Node.js docs)
+});
+
+
 app.listen( PORT, function(){
    console.log( `[pictures] RUNNING, http://localhost:${PORT}` );
 });
+

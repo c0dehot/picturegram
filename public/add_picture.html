@@ -12,54 +12,73 @@
 
 </head>
 <body>
-    <script>
-        $(document).ready( async function(){
-          // check if editing or new
-          const editId = location.hash.substr(1);
-          if( editId ){
-            // looks like the user is wanting to edit this entry
-            const editData = await $.get( `/api/thumbnail/${editId}` );
-            // set up the form
-            $('#name').val( editData.name );
-            $('#imageUrl').val( editData.imageUrl );
-            $('#tags').val( editData.tags );
-            $('#thumbId').val( editData.thumbId );
-          }
+<script>
+    function imageTypeSelect(){
+      $('#imageUrl').addClass('d-none');
+      $('#imageFile').addClass('d-none');
 
-          $('#submitBtn').click( async function(event){
-            event.preventDefault();
+      const selectType = $('#imageType').val();
+      $(`#${selectType}`).removeClass('d-none');
+    }
 
-            // disable save button
-            $('#submitBtn').prop('disabled', true);
+    $(document).ready( async function(){
+      // check if editing or new
+      const editId = location.hash.substr(1);
+      if( editId ){
+        // looks like the user is wanting to edit this entry
+        const editData = await $.get( `/api/thumbnail/${editId}` );
+        // set up the form
+        $('#name').val( editData.name );
+        $('#imageUrl').val( editData.imageUrl );
+        $('#tags').val( editData.tags );
+        $('#thumbId').val( editData.thumbId );
+      }
 
-            // build our save object
-            const thumbData = {
-              name: $('#name').val(),
-              imageUrl: $('#imageUrl').val(),
-              tags: $('#tags').val(),
-              thumbId: $('#thumbId').val() /* this will only be set if editing */
-            };
+      $('#submitBtn').click( async function(event){
+        event.preventDefault();
 
-            let apiResult;
-            console.log( `.. deciding on POST/PUT thumbId=(${$('#thumbId').val()}) set(${$('#thumbId').val()!==''}` );
-            if( $('#thumbId').val() !=='' ){
-              // edit
-              apiResult = await $.ajax({
-                url: '/api/thumbnails',
-                type: 'PUT',
-                data: thumbData });
-            } else {
-              // don't pass thumbId as we don't  have a value
-              delete thumbData.thumbId;
-              apiResult = await $.post( '/api/thumbnails', thumbData );
-            }
-            
-            alert( apiResult.message );
-            // redirect to the main page (listing thumbnails)
-            location.href = '/index.html';
-          })
-        })
-    </script>
+        // disable save button
+        // $('#submitBtn').prop('disabled', true);
+
+        const hasFile = $('#imageType').val()==='imageFile';
+        const isEdit = $('#thumbId').val().length>0;
+        if( hasFile && $('#imageFile').val()==='' ){
+          alert('Please attach a file!'); 
+          return;
+        }
+
+        // build our save object (FormData is javascript so we pass the jQuery 'javascript' object [0])
+        // javascript FormData will accumulate any INPUT fields with a 'name' field
+        const formData = new FormData( $('#mediaForm')[0] ); // $('#mediaForm')[0] );
+        // const formData = {
+        //   name: $('#name').val(),
+        //   imageUrl: $('#imageUrl').val(),
+        //   tags: $('#tags').val(),
+        //   thumbId: $('#thumbId').val() /* this will only be set if editing */
+        // };
+
+        console.log( `.. isEdit(${isEdit}) hasFile(${hasFile}) ${isEdit ? 'PUT' : 'POST'} thumbId=(${$('#thumbId').val()})` );
+
+        const apiResult = await $.ajax({
+            url: '/api/thumbnails',
+            type: isEdit ? 'PUT' : 'POST',
+            /* because we are passing in FormData() we must turn off jQuery processing */
+            processData: false,
+            contentType: false,
+            data: formData 
+          });
+        
+        if( apiResult.error ){
+          alert( apiResult.error );
+          return false;
+        }
+        
+        alert( apiResult.message );
+        // redirect to the main page (listing thumbnails)
+        location.href = '/index.html';
+      })
+    })
+</script>
 
     <main role="main">
 
@@ -77,19 +96,25 @@
               Add Picture
             </div>
             <div class="card-body">
-              <form role="form">
-                <input type='hidden' id='thumbId' value=''>
+              <form id='mediaForm' role="form" enctype="multipart/form-data" method="POST">
+                <input type='hidden' id='thumbId' name='thumbId' value=''>
                 <div class="form-group">
-                  <label for="name">Name</label>
-                  <input type="text" class="form-control" id="name">
+                  <label for="name">Name:</label>
+                  <input type="text" class="form-control" id="name" name='name'>
                 </div>
                 <div class="form-group">
-                  <label for="imageUrl">Image URL</label>
-                  <input type="text" class="form-control" id="imageUrl">
+                  <label for="imageUrl">
+                      <select onChange='imageTypeSelect()' id="imageType" name="imageType" class='form-control'>
+                        <option value="imageUrl">Image Url:</option>
+                        <option value="imageFile">Image File:</option>
+                      </select>
+                  </label>
+                  <input type="text" class="form-control" id="imageUrl" name='imageUrl'>
+                  <input type="file" id="imageFile" name="imageFile" class='form-control d-none'>
                 </div>
                 <div class="form-group">
-                  <label for="tags">Tags</label>
-                  <input type="text" class="form-control" id="tags">
+                  <label for="tags">Tags:</label>
+                  <input type="text" class="form-control" id="tags" name='tags'>
                 </div>
                 <button id='submitBtn' type="submit" class="btn btn-primary submit">Save</button>
               </form>

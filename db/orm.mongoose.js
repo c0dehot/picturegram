@@ -16,13 +16,10 @@ async function listThumbnails( userId, tag='' ){
    // now get the corresponding user likes
    let userFavouriteList = await db.users.findOne({ _id: userId }, 'favourites' );
    userFavouriteList = userFavouriteList.favourites;
-   console.log( 'userFavouriteList', userFavouriteList );
 
    // now clean up the list and return relevant data in camelCase
    let myList = [];
    thumbList.forEach( function( item ){
-      console.log( `fav for ${item._id}?`,
-         userFavouriteList.filter( fav=>String(fav)===String(item._id) ).length>0 ? item._id : false );
       myList.push({
          thumbId: item._id,
          name: item.name,
@@ -38,34 +35,35 @@ async function listThumbnails( userId, tag='' ){
 }
 
 // input: <object> { name, imageUrl, tags }
-// output: boolean on success
-function saveThumbnail( myData ){
+// output: thumbId on success, false otherwise
+async function saveThumbnail( myData ){
    const thumbnailData = {
       name: myData.name,
       imageUrl: myData.imageUrl,
       tags: myData.tags
    };
-   const dbThumbnail = new db.thumbnail(thumbnailData);
-   return dbThumbnail.save();
+   const dbResult = await ( new db.thumbnail(thumbnailData) ).save();
+   return dbResult._id ? dbResult._id : false;
+}
+
+// input: thumbId, <object> { name, imageUrl, tags }
+// output: thumbId on success or false
+async function updateThumbnail( thumbId, myData ){
+   // console.log(`[updateThumbnail] thumbId(${thumbId}) myEdit: `, myData);
+   const thumbnailData = {
+      name: myData.name,
+      imageUrl: myData.imageUrl,
+      tags: myData.tags
+   };
+   const dbResult = await db.thumbnail.findOneAndUpdate({_id: thumbId}, thumbnailData, {new: true});
+   return dbResult._id ? dbResult._id : false;
 }
 
 // input: { thumbId }
 // output: boolean on success
-function deleteThumbnail( thumbId ){
-   return db.thumbnail.findByIdAndDelete(thumbId);
-}
-
-// input: thumbId, <object> { name, imageUrl, tags }
-// output: boolean on success
-async function updateThumbnail( thumbId, myData ){
-   console.log('[updateThunbnail] myEdit: ', myData);
-   console.log( ' _id: ', myData._id );
-   const thumbnailData = {
-      name: myData.name,
-      imageUrl: myData.imageUrl,
-      tags: myData.tags
-   };
-   return db.thumbnail.findByIdAndUpdate(myData._id, thumbnailData);
+async function deleteThumbnail( thumbId ){
+   const dbResult = await db.thumbnail.findByIdAndDelete(thumbId);
+   return dbResult._id ? true : false;
 }
 
 // input: thumbId
@@ -134,9 +132,7 @@ async function loginUser( email, password ) {
 // output: boolean on success
 async function addFavourite(userId, thumbId){
    // const dbResult = await db.users.updateOne({_id:userID}, {$push: {favourites: mongoose.Types.ObjectId(thumbId)}});
-   console.log( `[addFavourite] updateOne {_id:${userId}}}, {$push: ${thumbId} }`);
    const dbResult = await db.users.updateOne({_id:userId}, { $push: { favourites: mongoose.Types.ObjectId(thumbId) } });
-   console.log( '[addFavourite\]', dbResult, dbResult.ok );
    return dbResult.ok ? true : false;
 }
 
