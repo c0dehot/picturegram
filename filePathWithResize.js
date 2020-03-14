@@ -3,7 +3,8 @@ const fs = require('fs');
 const sharp = require('sharp');
 
 async function filePathWithResize( filePath, originalName, resizeWidth=0, resizeHeight=0 ){
-   const fileExt = originalName.toLowerCase().substr((originalName.lastIndexOf('.')));
+   const fileExt = originalName.toLowerCase().substr((originalName.lastIndexOf('.')))
+      .replace('jpeg','jpg');
    const filePathWithExt = filePath+fileExt;
    resizeWidth = Math.round(resizeWidth); resizeHeight = Math.round(resizeHeight);
    if( resizeWidth>0 && resizeHeight>0 ){

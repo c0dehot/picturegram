@@ -21,9 +21,12 @@
     </style>
 
     <script>    
-    
+        // is there a session-logged in user, use it, else try a pre-saved one
+        const userId = sessionStorage.userId ? sessionStorage.userId : localStorage.userId;
+
         function logOut(){  
             localStorage.clear();
+            sessionStorage.clear();
             location.href = '/login.html';
         }
         
@@ -44,22 +47,9 @@
         }
 
         async function toggleFavourite( picId, isAlreadyFavourite ){
-          const userId = localStorage.userId;
-          if( !userId){
-            return
-          }
-
-          let apiResult;
           console.log( `[toggleFavourite] isAlreadyFavourite=(${isAlreadyFavourite})`, isAlreadyFavourite!==false );
-          /* It should be passed in as boolean */
-          if( isAlreadyFavourite ){
-            // turn favourite off
-            apiResult = await $.get(`/api/favourite-del/${userId}/${picId}`)
-          } else {
-            apiResult = await $.get(`/api/favourite-add/${userId}/${picId}`)
-          }
+          const apiResult = await $.get(`/api/favourite-${ isAlreadyFavourite ? 'del' : 'add' }/${userId}/${picId}`);
           console.log(apiResult);
-
           render();
         }
 
@@ -70,7 +60,6 @@
         }
 
         async function render(tag=''){
-          const userId = localStorage.userId;
           const myPictureList = await $.get( `/api/thumbnails/${userId}/${tag}`)
           console.log( `[render] called, myPictureList: `, myPictureList );
           
@@ -110,7 +99,7 @@
 }
 
         $(document).ready( async function(){
-            if( !localStorage.userId )
+            if( !userId )
               location.href = '/login.html';
             else
               render();
