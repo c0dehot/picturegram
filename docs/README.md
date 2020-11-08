@@ -5,10 +5,17 @@ This is a simple instagram-like app that allows you upload pictures.
 It's main purpose is a teaching tool. Thus we strive to keep the code clean and simple to understand, yet use the latest ecosystem features available.
 
 It uses:
-* bootstrap 5
-* pure ES6 javascript
-* mongoose 5 features
+* _Client Side_
+* Bootstrap 5
+* FontAwesome 5
+* Pure ES6 javascript, modern syncronous programming style with awaits
+* Two libraries: moment, [Jakes IndexDB](https://github.com/jakearchibald/idb)
+* mongoose 5 features ($in)
 * programming style to make transitioning to React programming intuitive
+* 
+* _Server Side_
+* Node with bcrypt, dotenv, multer (picture uploading), sharp (image resizing)
+
 
 It provides a simple register/login application with picture upload capabilities:
 * pictures are resized when uploaded
