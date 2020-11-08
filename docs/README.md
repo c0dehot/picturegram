@@ -2,7 +2,21 @@
 
 This is a simple instagram-like app that allows you upload pictures.
 
-It is nearly fully PWA-enabled to work in offline mode on your phone... hopefully it will be a good starting point for a instgram-type project for some of you!
+It's main purpose is a teaching tool. Thus we strive to keep the code clean and simple to understand, yet use the latest ecosystem features available.
+
+It uses:
+* bootstrap 5
+* pure ES6 javascript
+* mongoose 5 features
+* programming style to make transitioning to React programming intuitive
+
+It provides a simple register/login application with picture upload capabilities:
+* pictures are resized when uploaded
+* mobile-friendly UI
+* PWA offline mode which disables features not currently supported in offline mode (ex. picture uploading)
+
+Free to use, enjoy!
+
 
 ## Contributors
 See [CONTRIBUTORS.md](./CONTRIBUTORS.md)
