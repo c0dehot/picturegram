@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha2/css/bootstrap.min.css" integrity="sha384-DhY6onE6f3zzKbjUPRc2hOzGAdEf4/Dz+WJwBvEYL/lkkIsI3ihufq9hk9K4lVoK" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/all.css">
+  <link rel="stylesheet" href="./assets/style.css">
+
+  <title>Adding a Picture</title>
+</head>
+<body>
+    <div class="container">
+      <div class="card card-banner bg-light p-2 mb-1">
+        <div class='card-background'></div>
+        <div id='header' class="card-body text-center">
+            <h1 class="card-title"><h1><i class="fas fa-fire-alt"></i> PictureGram</h1>
+            <h3 class="card-subtitle mb-2 text-muted">Memories in the Heat of the Moment!</h3>
+        </div>
+      </div>
+
+      <form id='imageForm' enctype="multipart/form-data" method="POST">
+      <div class="card">
+        <div class="card-header">
+          <a href="/" class="btn btn-primary"><i class="fas fa-arrow-left"></i></a>
+          <button class="btn btn-outline-secondary float-right" onClick="logOut()">Log Out</button>
+          <span id='firstName' class='pt-2 mr-1 float-right'></span>
+        </div>
+        <div class="card-body">
+          <input type="hidden" id="imageId" name="imageId" value="">
+          <input type="hidden" id="imageUrl" name="imageUrl" value="">
+
+          <div class="row mb-3 mr-1">
+            <div class="col-4">
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-camera"></i></span>
+                <div class="form-file">
+                  <input onChange="previewImage(event)" id="imageFile" name="imageFile" type="file" accept="image/*" class="form-file-input" id="customFile">
+                  <label class="form-file-label" for="customFile">
+                    <span class="form-file-button">Browse</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div id="previewThumbnail" class="col-8 img-thumbnail preview">
+            </div>
+          </div>
+          <div class="input-group mb-3">
+            <span class="input-group-text"><i class="fas fa-lightbulb"></i></span>
+            <input id="title" name="title" type="text" class="form-control" placeholder="Title">
+          </div>
+
+          <div class="input-group mb-3">
+            <span class="input-group-text"><i class="fas fa-tags"></i></span>
+            <input id="tags" name="tags" type="text" class="form-control" placeholder="Tags">
+          </div>
+
+        </div>
+        <div class='card-footer'>
+          <div id='apiMessage' class="alert alert-success d-none"></div>
+          <button onClick="uploadImage(event)" class="btn btn-primary submit">Upload</button>
+          <button onClick="actionCancel(event)" class="btn btn-outline-secondary submit float-right">Cancel</button>
+
+        </div>
+      </div> <!-- /card -->
+      </form>
+    </div>
+    <script src='assets/script.js'></script>
+    <script>
+      imageInit();
+    </script>
+</body>
+</html>

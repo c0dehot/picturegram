@@ -1,138 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pictures</title>
-
-      <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha2/css/bootstrap.min.css" integrity="sha384-DhY6onE6f3zzKbjUPRc2hOzGAdEf4/Dz+WJwBvEYL/lkkIsI3ihufq9hk9K4lVoK" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/all.css">
+  <link rel="stylesheet" href="assets/style.css">
+  <!-- for PWAs -->
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />  
+  <link rel="apple-touch-icon" href="assets/pwa-icon.png">   
+  <meta name="theme-color" content="white"/>  
+  <meta name="apple-mobile-web-app-capable" content="yes">  
+  <meta name="apple-mobile-web-app-status-bar-style" content="black"> 
+  <meta name="apple-mobile-web-app-title" content="Picturegram"> 
+  <meta name="msapplication-TileImage" content="assets/pwa-icon.png">  
+  <meta name="msapplication-TileColor" content="#FFFFFF">  
+  <title>Picturegram</title>
 </head>
 <body>
-    <style>
-        .thumbnail-size {
-            width: 100%;
-            height: 30vh; /* 30% of viewport: see: https://css-tricks.com/fun-viewport-units/ */
-            object-fit: cover;
-        }
-    </style>
-
-    <script>    
-        // is there a session-logged in user, use it, else try a pre-saved one
-        const userId = sessionStorage.userId ? sessionStorage.userId : localStorage.userId;
-
-        function logOut(){  
-            localStorage.clear();
-            sessionStorage.clear();
-            location.href = '/login.html';
-        }
-        
-        async function deleteThumbnail( id ){
-            if( confirm( `Are you SURE you want to delete this?` ) ){
-                const apiResult = await $.ajax({
-                    url: `/api/thumbnail/${id}`,
-                    type: 'DELETE'
-                });
-                alert( apiResult.message );
-                // refresh the page
-                location.href = '/index.html';
-            }
-        }
-
-        function editThumbnail( id ){
-            location.href = `/add_picture.html#${id}`;
-        }
-
-        async function toggleFavourite( picId, isAlreadyFavourite ){
-          console.log( `[toggleFavourite] isAlreadyFavourite=(${isAlreadyFavourite})`, isAlreadyFavourite!==false );
-          const apiResult = await $.get(`/api/favourite-${ isAlreadyFavourite ? 'del' : 'add' }/${userId}/${picId}`);
-          console.log(apiResult);
-          render();
-        }
-
-        async function searchTag(tag){
-          console.log(`Searching for ${tag}...`)
-          // const tagSearchPictures = await $.get( `/api/thumbnails/${tag}`)
-          render(tag);
-        }
-
-        async function render(tag=''){
-          const myPictureList = await $.get( `/api/thumbnails/${userId}/${tag}`)
-          console.log( `[render] called, myPictureList: `, myPictureList );
-          
-          $('#pictureList').html('');
-
-          myPictureList.forEach( function( picture ){
-            // format the time (relative to now, ex 5 minutes ago)
-            const formattedTime = moment( picture.creationTime ).fromNow();
-
-            // build the badges
-            let tagsHtml = '';
-            const tags = picture.tags.split(',');
-            tags.forEach( function( tag ){
-                tagsHtml += `<span class="badge badge-pill badge-info is-light" onClick="searchTag('${tag.trim()}')">${tag.trim()}</span> `;
-            });
-
-            $('#pictureList').append( `
-          <div class="col-md-4">
-            <div class="card mb-4 shadow-sm h-100">
-              <img src="${picture.imageUrl}" class="thumbnail-size img-fluid" preserveAspectRatio="xMidYMid slice" />
-              <div class="card-body">
-                <p><a class="favorite" onClick="toggleFavourite('${picture.thumbId}',${picture.isFavourite})" style="float:right;"><i id="heart${picture.thumbId}" class="fa ${picture.isFavourite!=false ? 'fa-heart' : 'fa-heart-o'} fa-lg fav" aria-hidden="true"></i></a></p>
-                <p class="card-text"><b>${picture.name}</b>: ${tagsHtml} </p>
-                <div class="d-flex justify-content-between align-items-center">
-                  <div class="btn-group">
-                    <button onClick="editThumbnail('${picture.thumbId}')" type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                    <button onClick="deleteThumbnail('${picture.thumbId}')" type="button" class="btn btn-sm btn-outline-secondary">Delete</button>
-                  </div>
-                  <small class="text-small text-muted format-date" style='padding-left:7px; font-size: -1;'>${formattedTime}</small>
-                </div>
-              </div>
-            </div>
-          </div>                
-            `);
-          });
-
-}
-
-        $(document).ready( async function(){
-            if( !userId )
-              location.href = '/login.html';
-            else
-              render();
-        })
-    </script>
-
-    
-    <main role="main">
-
-        <section class="jumbotron text-center">
-          <div class="container">
-            <button id='log' type="submit" class="btn btn-primary submit" onClick="logOut()">Log Out </button>
-
-            <h1>Our Greatest Memories Pinboard</h1>
-            <p class="lead text-muted">Sometimes you forget how many wonderful memories you have already experienced.</p>
-          </div>
-        </section>
-      
-        <div class="album py-5 bg-light">
-          <div class="container">
-            <div class="row">
-                <div class="col float-right">
-                    <a href="/add_picture.html" class="btn btn-lg btn-primary">Add Picture</a>
-                </div>
-            </div>
-            <hr />                  
-            <div class="row" id='pictureList'>
-                <!-- pictures will be put here -->
-            </div>
-          </div>
+    <div class="container">
+      <div onClick="actionCancel(event)" class="card card-banner bg-light p-2 mb-1">
+        <div class='card-background'></div>
+        <div id='header' class="card-body text-center">
+            <h1 class="card-title"><h1><i class="fas fa-fire-alt"></i> PictureGram</h1>
+            <h3 class="card-subtitle mb-2 text-muted">Memories in the Heat of the Moment!</h3>
         </div>
-      
-      </main>
+      </div>
 
-</body>
+      <form>
+        <div class="card">
+          <div class="card-header">
+            <a href="/image.html" class="btn btn-primary online-only"><i class="fas fa-plus"></i> <i class="fas fa-camera"></i></a>
+            <button class="btn btn-outline-secondary float-right online-only" onClick="logOut()">Log Out</button>
+            <span id='firstName' class='pt-2 mr-1 float-right'></span>
+          </div>
+          <div id='imageList' class="card-body">
+              <i class="fas fa-spinner fa-3x text-muted mt-5"></i>
+          </div>
+        </div> <!-- /card -->
+      </form>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+    <!-- <script src="https://unpkg.com/idb@5/build/iife/index-min.js"></script> -->
+    <script src="assets/index-min.js"></script>
+    <script src='assets/script.js'></script>
+    <script>
+        indexInit();
+
+        // load serviceworker when page loaded
+        window.onload = function(){
+          if( navigator.serviceWorker )
+            navigator.serviceWorker.register('./serviceworker.js');
+
+          window.addEventListener('online',  updateOnlineStatus);
+          window.addEventListener('offline', updateOnlineStatus);
+          updateOnlineStatus();
+
+          window.onhashchange = showImageList;
+
+        }
+    </script>
+  </body>
 </html>

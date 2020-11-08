@@ -35,7 +35,7 @@
       "brace-style": "error",
       "indent": [
           "error",
-          3
+          4
       ],
       "quotes": [
           "error",
