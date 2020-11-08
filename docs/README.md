@@ -4,6 +4,10 @@ This is a simple instagram-like app that allows you upload pictures.
 
 It is nearly fully PWA-enabled to work in offline mode on your phone... hopefully it will be a good starting point for a instgram-type project for some of you!
 
+## Contributors
+See [CONTRIBUTORS.md](./CONTRIBUTORS.md)
+
+
 ## Database
 It is built around mongo with mongoose.
 
