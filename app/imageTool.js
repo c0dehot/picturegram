@@ -8,7 +8,7 @@ function imageTool( publicRelativePath, uploadPath, defaultWidth=0, defaultHeigh
 
     return {
         resize: async function( uploadData, resizeWidth=defaultWidth, resizeHeight=defaultHeight ){
-            const filePath = publicRelativePath + uploadData.path;
+            const filePath = path.join(publicRelativePath,uploadData.path);
             // const originalName = uploadData.originalname;
             // const fileExt = originalName.toLowerCase().substr((originalName.lastIndexOf('.'))).replace('jpeg','jpg');
             const fileExt = '.jpg';
