@@ -9,8 +9,9 @@ async function registerUser( userData ){
     console.log( '[registerUser] data passed by form (to write to DB): ', userData );
 
     // save hashed password
-    const passwordHash = await bcrypt.hash(userData.userPassword, 10);
+    const passwordHash = await bcrypt.hash(userData.userPassword.trim(), 10);
     userData.userPassword = passwordHash;
+    userData.emailAddress = userData.emailAddress.toLowerCase();
 
     const result = await db.users.create(userData);
 
@@ -26,7 +27,7 @@ async function loginUser( email, password ) {
         console.log( '[loginUser] invalid email/password' );
         return false;
     }
-    const result = await db.users.findOne( { emailAddress: email } );
+    const result = await db.users.findOne( { emailAddress: email.toLowerCase() } );
     console.log( '[loginUser] result from email search: ', result, !result );
 
     // check if users password is same as servers
@@ -34,7 +35,7 @@ async function loginUser( email, password ) {
         console.log( ' .. x sorry could not find a user with that email!');
         return false;
     } else {
-        const isValidPassword = await bcrypt.compare( password, result.userPassword );
+        const isValidPassword = await bcrypt.compare( password.trim(), result.userPassword );
         console.log( ` [loginUser] checking password (password: ${password} ) hash(${result.userPassword})`, isValidPassword );
         if( !isValidPassword ) {
             console.log( '[loginUser] invalid password, hashes do not match!' );
@@ -85,13 +86,15 @@ async function removeImageFav( userId, imageId ){
 }
 
 async function bulkActionSync( userId, bulkActions ){
-    if( bulkActions.length<1 ) return true;
+    if( bulkActions.length<1 ) {
+        return true;
+    }
 
     const result = await db.users.findById( userId, 'imageFavourites' );
     const imageFavourites = result.imageFavourites;
 
     bulkActions.forEach( action=>{
-        console.log( `.. ${action.type} @ ${action.time}` )
+        console.log( `.. ${action.type} @ ${action.time}` );
         if( action.type==='imageIdFav' ){
             const { imageId, isMyFavourite }= action.data;
             if( isMyFavourite && imageFavourites.indexOf(imageId)===-1 ){
@@ -99,10 +102,10 @@ async function bulkActionSync( userId, bulkActions ){
             } else if( !isMyFavourite && imageFavourites.indexOf(imageId)!==-1 ){
                 imageFavourites.splice( imageFavourites.indexOf(imageId),1 );
             } else {
-                console.log( '.. ignoring ')
+                console.log( '.. ignoring ');
             }
         }
-    })
+    });
 
     const updateResult = await db.users.updateOne( { _id: userId }, { $set: { imageFavourites } } );
     console.log( '[bulkActionSync] result:: ', updateResult );
