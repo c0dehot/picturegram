@@ -5,6 +5,8 @@ function imageTool( publicRelativePath, uploadPath, defaultWidth=0, defaultHeigh
     const fs = require('fs');
     const sharp = require('sharp');
     const path = require('path');
+    // to normal mac/win difs
+    uploadPath = path.join( uploadPath );
 
     return {
         resize: async function( uploadData, resizeWidth=defaultWidth, resizeHeight=defaultHeight ){
